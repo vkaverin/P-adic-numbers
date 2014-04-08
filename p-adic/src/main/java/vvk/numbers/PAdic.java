@@ -202,17 +202,37 @@ public final class PAdic {
      * @return p-adic number that is result of substraction.
      */
     public PAdic substract(final PAdic substracted) {
-        if (this.getOrder() < 0) {
 
-            if (substracted.getOrder() >= 0) {
-                return this.substract(substracted, -this.getOrder());
+        PAdic current = null;
+        final int[] digits = new int[PAdic.len];
+        boolean haveActual = false;
+
+        if (substracted.getOrder() < 0 && substracted.getOrder() < this.getOrder()) {
+            final int diff = Math.abs(substracted.getOrder() - this.getOrder());
+
+            for (int i = PAdic.len - 1; i - diff >= 0; --i) {
+                final int idx = i - diff;
+                digits[i] = this.digits[idx];
             }
 
-            final int diff = this.getOrder() - substracted.getOrder();
-            final int offset = Math.abs(diff);
-            return diff < 0 ? this.substract(substracted, offset) : substracted.substract(this, offset);
+            current = new PAdic(digits, this.getOrder() - diff);
+            haveActual = true;
         }
-        return substract(substracted, 0);
+
+        if (!haveActual) {
+            current = this;
+        }
+
+        if (current.getOrder() < 0) {
+
+            if (substracted.getOrder() >= 0) {
+                return current.substract(substracted, -current.getOrder());
+            }
+        }
+
+        final int offset = current.getOrder() - substracted.getOrder();
+
+        return current.substract(substracted, offset);
     }
 
     private PAdic substract(final PAdic substracted, final int offset) {
