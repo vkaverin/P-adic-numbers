@@ -1,3 +1,5 @@
+package vvk.numbers;
+
 import org.junit.Assert;
 import org.junit.Test;
 import vvk.numbers.PAdic;
