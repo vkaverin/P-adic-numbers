@@ -23,61 +23,6 @@ public class PAdicTest {
     }
 
     @Test
-    public void testZero() {
-        PAdic zeroString = new PAdic("0");
-        PAdic zeroInt = new PAdic(0);
-        PAdic zeroRat = new PAdic(0, 1);
-
-        Assert.assertEquals(zeroString, PAdic.ZERO);
-        Assert.assertEquals(zeroInt, PAdic.ZERO);
-        Assert.assertEquals(zeroRat, PAdic.ZERO);
-        Assert.assertEquals(zeroString, zeroInt);
-        Assert.assertEquals(zeroString, zeroRat);
-        Assert.assertEquals(zeroRat, zeroInt);
-    }
-
-    @Test
-    public void testAddition() {
-        PAdic x = new PAdic("122");
-        PAdic y = new PAdic("221");
-        PAdic z = new PAdic("10");
-        PAdic zneg = new PAdic(-5);
-
-        Assert.assertEquals(new PAdic("343"), x.add(y));
-        Assert.assertEquals(new PAdic("244"), x.add(x));
-        Assert.assertEquals(new PAdic("0"), z.add(zneg));
-        Assert.assertEquals(new PAdic("0"), zneg.add(z));
-
-        x = new PAdic("123");
-        y = new PAdic("0.1");
-        z = new PAdic(-1, 5);
-
-        Assert.assertEquals(new PAdic("123.1"), x.add(y));
-        Assert.assertEquals(x, x.add(y).add(z));
-    }
-
-    @Test
-    public void testSubstraction() {
-        PAdic rat = new PAdic(1, 5);
-        PAdic point = new PAdic("0.1");
-
-        Assert.assertEquals(rat.getOrder(), point.getOrder());
-        Assert.assertEquals(-1, point.getOrder());
-        Assert.assertEquals(rat.substract(point), PAdic.ZERO);
-        Assert.assertEquals(point.substract(rat), PAdic.ZERO);
-
-        PAdic one = new PAdic("1");
-        Assert.assertEquals(one.substract(one).getOrder(), PAdic.ZERO.getOrder());
-        Assert.assertEquals(one.substract(one), PAdic.ZERO);
-
-        PAdic one3 = new PAdic("11.1");
-        PAdic one1 = new PAdic("10");
-
-        PAdic result = new PAdic("0.1");
-        Assert.assertEquals(one3.substract(one1).substract(one), result);
-    }
-
-    @Test
     public void testMultiplication() {
         PAdic a = new PAdic("123.4");
         PAdic one = new PAdic("1");

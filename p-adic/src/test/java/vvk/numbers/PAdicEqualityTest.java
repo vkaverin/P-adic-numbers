@@ -74,4 +74,18 @@ public class PAdicEqualityTest {
         Assert.assertEquals(new PAdic("1"), point7.add(point5));
         Assert.assertEquals(new PAdic("0.2002"), point7.add(point6));
     }
+
+    @Test
+    public void testZero() {
+        PAdic zeroString = new PAdic("0");
+        PAdic zeroInt = new PAdic(0);
+        PAdic zeroRat = new PAdic(0, 1);
+
+        Assert.assertEquals(zeroString, PAdic.ZERO);
+        Assert.assertEquals(zeroInt, PAdic.ZERO);
+        Assert.assertEquals(zeroRat, PAdic.ZERO);
+        Assert.assertEquals(zeroString, zeroInt);
+        Assert.assertEquals(zeroString, zeroRat);
+        Assert.assertEquals(zeroRat, zeroInt);
+    }
 }
