@@ -23,22 +23,6 @@ public class PAdicTest {
     }
 
     @Test
-    public void testMultiplication() {
-        PAdic a = new PAdic("123.4");
-        PAdic one = new PAdic("1");
-        Assert.assertEquals(-1, a.getOrder());
-        Assert.assertEquals(0, one.getOrder());
-        Assert.assertEquals(a, a.multiply(one));
-        Assert.assertEquals(a.multiply(PAdic.ZERO), PAdic.ZERO);
-        Assert.assertEquals(a.multiply(PAdic.ZERO), PAdic.ZERO);
-
-        PAdic two = new PAdic("2222");
-        PAdic point = new PAdic("0.1");
-        PAdic result = new PAdic("222.2");
-        Assert.assertEquals(two.multiply(point), result);
-    }
-
-    @Test
     public void testDivision() {
         PAdic twoPoint = new PAdic("222.2");
         PAdic onePoint = new PAdic("111.1");
