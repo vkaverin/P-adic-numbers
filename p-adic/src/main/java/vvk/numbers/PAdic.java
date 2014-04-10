@@ -285,7 +285,28 @@ public final class PAdic {
             result = result.add(adder, i);
         }
 
-        int order = PAdic.calculateOrder(result.digits, this.getOrder(), multiplier.getOrder(), Operation.MULTIPLICATION);
+        // In some cases when we multiply numbers, it may happens that
+        // real index of the most right non-zero coefficient gets greater than it must be.
+        // For example, multiplying ...00000.1 (order = -1)  by ...000010 (order = 1)
+        // we will get ...0000010, that is incorrect, because its order must be zero.
+        // So, the order calculated correctly, but we need to shift the result a little to the right.
+
+        final int minOrder = Math.min(this.getOrder(), multiplier.getOrder());
+        final int maxOrder = Math.max(this.getOrder(), multiplier.getOrder());
+
+        if (minOrder < 0 && 0 < maxOrder) {
+            int pos = 0;
+
+            while (pos < -Math.min(this.getOrder(), multiplier.getOrder()) && result.digits[pos] == 0) {
+                ++pos;
+            }
+
+            for (int i = 0; i + pos < PAdic.len; ++i) {
+                result.digits[i] = result.digits[i + pos];
+            }
+        }
+
+        final int order = PAdic.calculateOrder(result.digits, this.getOrder(), multiplier.getOrder(), Operation.MULTIPLICATION);
 
         return new PAdic(result.digits, order);
     }
@@ -395,7 +416,7 @@ public final class PAdic {
             return order = 0;
         }
 
-        if (order >= 0 && order < pos) {
+        if (0 <= order && order < pos) {
             order = pos;
         }
 
