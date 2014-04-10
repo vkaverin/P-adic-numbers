@@ -1,5 +1,7 @@
 package vvk.numbers;
 
+import java.util.Arrays;
+
 public final class PAdic {
 
     public static final PAdic ZERO;
@@ -23,7 +25,6 @@ public final class PAdic {
 
     {
         base = 5;
-        digits = new int[PAdic.len];
     }
 
     /**
@@ -36,6 +37,8 @@ public final class PAdic {
         long current = Math.abs(value);
 
         int pos = 0;
+
+        this.digits = new int[PAdic.len];
 
         while (current != 0) {
             digits[pos] = (int) current % base;
@@ -68,6 +71,7 @@ public final class PAdic {
         int posInString = value.length() - 1;
         int posInDigits = 0;
 
+        this.digits = new int[PAdic.len];
 
         while (posInString >= 0) {
 
@@ -107,7 +111,6 @@ public final class PAdic {
             }
         } else {
             if (pos == PAdic.len) {
-                order = 0;
                 pos = 0;
             }
 
@@ -132,18 +135,12 @@ public final class PAdic {
 
         final PAdic pAdicResult = pAdicNumerator.divide(pAdicDenominator);
 
-        for (int i = 0; i < PAdic.len; ++i) {
-            this.digits[i] = pAdicResult.digits[i];
-        }
-
+        digits = Arrays.copyOfRange(pAdicResult.digits, 0, PAdic.len);
         order = pAdicResult.order;
     }
 
     private PAdic(final int[] digits, final int order) {
-        for (int i = 0; i < Math.min(PAdic.len, digits.length); ++i) {
-            this.digits[i] = digits[i];
-        }
-
+        this.digits = Arrays.copyOfRange(digits, 0, PAdic.len);
         this.order = order;
     }
 
@@ -297,7 +294,7 @@ public final class PAdic {
         if (minOrder < 0 && 0 < maxOrder) {
             int pos = 0;
 
-            while (pos < -Math.min(this.getOrder(), multiplier.getOrder()) && result.digits[pos] == 0) {
+            while (pos < -minOrder && result.digits[pos] == 0) {
                 ++pos;
             }
 
@@ -379,7 +376,7 @@ public final class PAdic {
             }
 
             if (pos == PAdic.len) {
-                return order = 0;
+                return 0;
             }
 
             if (order >= 0 && order < pos) {
@@ -413,7 +410,7 @@ public final class PAdic {
         }
 
         if (pos == PAdic.len) {
-            return order = 0;
+            return 0;
         }
 
         if (0 <= order && order < pos) {
@@ -461,7 +458,7 @@ public final class PAdic {
 
     @Override
     public String toString() {
-        StringBuffer result = new StringBuffer(PAdic.len);
+        StringBuilder result = new StringBuilder(PAdic.len);
 
         int pos = PAdic.len - 1;
 
@@ -479,6 +476,10 @@ public final class PAdic {
 
         if (order < 0) {
             result.insert(result.length() + order, '.');
+        }
+
+        if (result.charAt(0) == '.') {
+            result.insert(0, '0');
         }
 
         return result.toString();
