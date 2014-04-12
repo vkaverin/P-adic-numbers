@@ -8,8 +8,8 @@ public final class PAdic {
     private final int base;
     private static final int len;
 
-    final int digits[];
-    final int order;
+    private final int digits[];
+    private final int order;
 
     private static enum Operation {
         ADDITION,
