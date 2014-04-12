@@ -4,7 +4,6 @@ import java.util.Arrays;
 
 public final class PAdic {
 
-    public static final PAdic ZERO;
     private final int base;
     private static final int len;
 
@@ -20,25 +19,21 @@ public final class PAdic {
 
     static {
         len = 64;
-        ZERO = new PAdic("0");
-    }
-
-    {
-        base = 5;
     }
 
     /**
      * Constructs p-adic number from integer value.
      * @param value integer value in base 10.
+     * @param base base of field of p-adic numbers.
+     *             Note, that base must be a prime number.
      */
-    public PAdic(final long value) {
-        final boolean isNegative = (value < 0);
-
-        long current = Math.abs(value);
-
-        int pos = 0;
-
+    public PAdic(final long value, final int base) {
         this.digits = new int[PAdic.len];
+        this.base = base;
+
+        final boolean isNegative = (value < 0);
+        long current = Math.abs(value);
+        int pos = 0;
 
         while (current != 0) {
             digits[pos] = (int) current % base;
@@ -64,14 +59,17 @@ public final class PAdic {
      * @param value string that represents p-adic number.
      *              It can be either integer value or floating point value.
      *              Note, that point can be defined by '.' symbol only.
+     * @param base base of field of p-adic numbers.
+     *             Note, that base must be a prime number.
      */
-    public PAdic(final String value) {
-        final int pointAt = value.lastIndexOf('.');
-
-        int posInString = value.length() - 1;
-        int posInDigits = 0;
+    public PAdic(final String value, final int base) {
 
         this.digits = new int[PAdic.len];
+        this.base = base;
+
+        final int pointAt = value.lastIndexOf('.');
+        int posInString = value.length() - 1;
+        int posInDigits = 0;
 
         while (posInString >= 0) {
 
@@ -124,22 +122,26 @@ public final class PAdic {
      * Constructs p-adic number from rational fraction.
      * @param numerator numerator of the fraction in base 10. Must be integer value.
      * @param denominator denominator of the fracture in base 10. Denominator must be positive.
+     * @param base base of field of p-adic numbers.
+     *             Note, that base must be a prime number.
      */
-    public PAdic(final int numerator, final int denominator) {
+    public PAdic(final int numerator, final int denominator, final int base) {
         final int g = gcd(Math.abs(numerator), Math.abs(denominator));
         final int actualNumerator = numerator / g;
         final int actualDenominator = denominator / g;
 
-        final PAdic pAdicNumerator = new PAdic(actualNumerator);
-        final PAdic pAdicDenominator = new PAdic(actualDenominator);
+        final PAdic pAdicNumerator = new PAdic(actualNumerator, base);
+        final PAdic pAdicDenominator = new PAdic(actualDenominator, base);
 
         final PAdic pAdicResult = pAdicNumerator.divide(pAdicDenominator);
 
-        digits = Arrays.copyOfRange(pAdicResult.digits, 0, PAdic.len);
-        order = pAdicResult.order;
+        this.digits = Arrays.copyOfRange(pAdicResult.digits, 0, PAdic.len);
+        this.order = pAdicResult.order;
+        this.base = pAdicResult.base;
     }
 
-    private PAdic(final int[] digits, final int order) {
+    private PAdic(final int[] digits, final int order, final int base) {
+        this.base = base;
         this.digits = Arrays.copyOfRange(digits, 0, PAdic.len);
         this.order = order;
     }
@@ -190,7 +192,7 @@ public final class PAdic {
 
         final int order = PAdic.calculateOrder(result, this.getOrder(), added.getOrder(), Operation.ADDITION);
 
-        return new PAdic(result, order);
+        return new PAdic(result, order, this.base);
     }
 
     /**
@@ -212,7 +214,7 @@ public final class PAdic {
                 digits[i] = this.digits[idx];
             }
 
-            current = new PAdic(digits, this.getOrder() - diff);
+            current = new PAdic(digits, this.getOrder() - diff, this.base);
             haveActual = true;
         }
 
@@ -264,7 +266,7 @@ public final class PAdic {
 
         final int order = PAdic.calculateOrder(result, this.getOrder(), substracted.getOrder(), Operation.SUBSTRACTION);
 
-        return new PAdic(result, order);
+        return new PAdic(result, order, this.base);
     }
 
     /**
@@ -274,11 +276,11 @@ public final class PAdic {
      */
     public PAdic multiply(final PAdic multiplier) {
 
-        PAdic result = PAdic.ZERO;
+        PAdic result = new PAdic("0", this.base);
 
         for (int i = 0; i < PAdic.len; ++i) {
             final int temp[] = multiplyToInteger(digits, multiplier.digits[i]);
-            final PAdic adder = new PAdic(temp, 0);
+            final PAdic adder = new PAdic(temp, 0, this.base);
             result = result.add(adder, i);
         }
 
@@ -305,7 +307,7 @@ public final class PAdic {
 
         final int order = PAdic.calculateOrder(result.digits, this.getOrder(), multiplier.getOrder(), Operation.MULTIPLICATION);
 
-        return new PAdic(result.digits, order);
+        return new PAdic(result.digits, order, this.base);
     }
 
     /**
@@ -316,7 +318,7 @@ public final class PAdic {
     public PAdic divide(final PAdic divisor) {
         final int[] result = new int[PAdic.len];
 
-        PAdic divided = new PAdic(this.digits, 0);
+        PAdic divided = new PAdic(this.digits, 0, this.base);
 
         int pos = 0;
 
@@ -334,7 +336,7 @@ public final class PAdic {
             temp[i] = temp[PAdic.len - pos - 1];
         }
 
-        final PAdic actualDivisor = new PAdic(temp, divisor.getOrder() - pos);
+        final PAdic actualDivisor = new PAdic(temp, divisor.getOrder() - pos, this.base);
 
         for (int i = 0; i < PAdic.len; ++i) {
             final int digit = findMultiplier(divided.digits[i], actualDivisor.digits[0]);
@@ -346,12 +348,12 @@ public final class PAdic {
             final int[] tmp = multiplyToInteger(actualDivisor.digits, digit);
 
             result[i] = digit;
-            divided = divided.substract(new PAdic(tmp, 0), i);
+            divided = divided.substract(new PAdic(tmp, 0, this.base), i);
         }
 
         final int order = PAdic.calculateOrder(result, this.getOrder() - pos, actualDivisor.getOrder(), Operation.DIVISION);
 
-        return new PAdic(result, order);
+        return new PAdic(result, order, this.base);
     }
 
     /**
@@ -501,7 +503,11 @@ public final class PAdic {
 
         PAdic number = (PAdic) obj;
 
-        if (this.getOrder() != number.getOrder()) {
+        if (this.base != number.base) {
+            return false;
+        }
+
+        if (this.order != number.order) {
             return false;
         }
 
@@ -524,6 +530,7 @@ public final class PAdic {
         }
 
         hash = hash * prime + order;
+        hash = hash * prime + base;
 
         return hash;
     }
