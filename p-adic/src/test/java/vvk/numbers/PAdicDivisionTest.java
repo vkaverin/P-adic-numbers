@@ -1,11 +1,17 @@
 package vvk.numbers;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Estraaanged
- * Date: 12.04.14
- * Time: 11:43
- * To change this template use File | Settings | File Templates.
- */
+import org.junit.Assert;
+import org.junit.Test;
+
 public class PAdicDivisionTest {
+
+    @Test
+    public void testDivision() {
+        PAdic twoPoint = new PAdic("222.2");
+        PAdic onePoint = new PAdic("111.1");
+        PAdic two = new PAdic(2);
+
+        Assert.assertEquals(two, twoPoint.divide(onePoint));
+        Assert.assertEquals(onePoint, twoPoint.divide(two));
+    }
 }

@@ -9,8 +9,6 @@ public class PAdicMultiplicationTest {
     public void testMultiplication() {
         PAdic a = new PAdic("123.4");
         PAdic one = new PAdic("1");
-        Assert.assertEquals(-1, a.getOrder());
-        Assert.assertEquals(0, one.getOrder());
         Assert.assertEquals(a, a.multiply(one));
         Assert.assertEquals(a.multiply(PAdic.ZERO), PAdic.ZERO);
         Assert.assertEquals(a.multiply(PAdic.ZERO), PAdic.ZERO);
@@ -45,5 +43,19 @@ public class PAdicMultiplicationTest {
 
         Assert.assertEquals(value6, value10.multiply(value5));
         Assert.assertEquals(value6, value5.multiply(value10));
+
+        PAdic x = new PAdic("1231.0012");
+        PAdic y = new PAdic("13200");
+        result =  new PAdic("22404221.34");
+
+        Assert.assertEquals(result, x.multiply(y));
+        Assert.assertEquals(result, y.multiply(x));
+
+        x = new PAdic("1.23");
+        y = new PAdic("100");
+        result = new PAdic("123");
+
+        Assert.assertEquals(result, x.multiply(y.multiply(value3).multiply(value3.substract(PAdic.ZERO))));
+        Assert.assertEquals(result, y.multiply(x));
     }
 }

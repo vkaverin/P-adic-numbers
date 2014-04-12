@@ -23,5 +23,18 @@ public class PAdicAdditionTest {
 
         Assert.assertEquals(new PAdic("123.1"), x.add(y));
         Assert.assertEquals(x, x.add(y).add(z));
+
+        x = new PAdic("1231.00120");
+        y = new PAdic("13211");
+        z = new PAdic("1.23");
+
+        PAdic result = new PAdic("14443.2312");
+
+        Assert.assertEquals(result, x.add(y).add(z));
+        Assert.assertEquals(result, z.add(y).add(x));
+        Assert.assertEquals(result, y.add(x).add(z));
+        Assert.assertEquals(result, x.add(y.add(z)));
+        Assert.assertEquals(result, z.add(y.add(x)));
+        Assert.assertEquals(result, y.add(z.add(x)));
     }
 }

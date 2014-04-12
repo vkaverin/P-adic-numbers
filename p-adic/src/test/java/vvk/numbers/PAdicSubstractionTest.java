@@ -33,5 +33,20 @@ public class PAdicSubstractionTest {
         Assert.assertEquals(point1, point1.substract(PAdic.ZERO));
         Assert.assertEquals(PAdic.ZERO,point1.substract(point1));
         Assert.assertEquals(PAdic.ZERO,point2.substract(point2));
+
+        PAdic x = new PAdic("1231.0012");
+        PAdic y = new PAdic("13211");
+        result = new PAdic("444444444444444444444444444444444444444444444444444444433020.0012");
+
+        Assert.assertEquals(result, x.substract(y));
+
+        result = new PAdic("11424.4433");
+
+        Assert.assertEquals(result, y.substract(x));
+
+        y = new PAdic("1.23");
+        result = new PAdic("444444444444444444444444444444444444444444444444444444443220.2233");
+
+        Assert.assertEquals(result, y.substract(x));
   }
 }
