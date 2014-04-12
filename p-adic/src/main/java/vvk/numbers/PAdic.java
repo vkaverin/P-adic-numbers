@@ -227,7 +227,7 @@ public final class PAdic {
             }
         }
 
-        final int offset = current.getOrder() - substracted.getOrder();
+        final int offset = Math.abs(current.getOrder() - substracted.getOrder());
 
         return current.substract(substracted, offset);
     }
