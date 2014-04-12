@@ -513,4 +513,18 @@ public final class PAdic {
 
         return true;
     }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        final int prime = 31;
+
+        for (int i = 0; i < PAdic.len; ++i) {
+            hash = hash * prime + digits[i];
+        }
+
+        hash = hash * prime + order;
+
+        return hash;
+    }
 }
