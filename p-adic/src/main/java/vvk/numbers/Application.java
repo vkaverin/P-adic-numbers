@@ -1,0 +1,131 @@
+/*
+The MIT License (MIT)
+
+Copyright (c) 2014 Vladislav Kaverin
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
+package vvk.numbers;
+
+import java.io.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+public class Application {
+
+    private static final BufferedReader READER;
+
+    private PAdic x;
+    private PAdic y;
+    private int base;
+
+    private PAdic addition;
+    private PAdic substraction;
+    private PAdic multiplication;
+    private PAdic division;
+
+    static {
+        READER = new BufferedReader(new InputStreamReader(System.in));
+    }
+
+    public void read() throws IOException {
+        System.out.print("Base = ");
+        this.base = Integer.valueOf(READER.readLine());
+        String value;
+        System.out.print("x = ");
+        value = READER.readLine();
+        x = new PAdic(value, base);
+        System.out.print("y = ");
+        value = READER.readLine();
+        y = new PAdic(value, base);
+    }
+
+    public void calculate() {
+        addition = x.add(y);
+        substraction = x.substract(y);
+        multiplication = x.multiply(y);
+
+        if (new PAdic("0", this.base).equals(y)) {
+            division = null;
+        } else {
+            division = x.divide(y);
+        }
+    }
+
+    public void print() {
+        Map<String, PAdic> results = new LinkedHashMap<String, PAdic>();
+        results.put("| Addition       |", addition);
+        results.put("| Substraction   |", substraction);
+        results.put("| Multiplication |", multiplication);
+        results.put("| Division       |", division);
+
+        int totalLength = Math.max(Math.max(addition.toString().length(), substraction.toString().length()), multiplication.toString().length()) + "| Multiplication |".length() + 3;
+
+        if (division != null) {
+            totalLength = Math.max(totalLength, division.toString().length());
+        }
+
+        final StringBuilder footer = new StringBuilder();
+
+        while (footer.length() < totalLength) {
+            footer.append('-');
+        }
+
+        footer.setCharAt(0, '+');
+        footer.setCharAt(17, '+');
+        footer.setCharAt(footer.length() - 1, '+');
+
+        System.out.println(footer.toString());
+
+        final StringBuilder nextLine = new StringBuilder();
+        nextLine.append("| Operation      | Result");
+
+        while (nextLine.length() < totalLength - 1) {
+            nextLine.append(' ');
+        }
+        nextLine.append('|');
+        System.out.println(nextLine.toString());
+        System.out.println(footer.toString());
+
+        for (String key: results.keySet()) {
+            nextLine.delete(0, nextLine.length());
+
+            nextLine.append(key);
+            nextLine.append(" " + results.get(key));
+
+            while (nextLine.length() < totalLength - 2) {
+                nextLine.append(' ');
+            }
+
+            nextLine.append(" |");
+            System.out.println(nextLine.toString());
+            System.out.println(footer.toString());
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        final Application app = new Application();
+        while (true) {
+            app.read();
+            app.calculate();
+            app.print();
+        }
+    }
+}
