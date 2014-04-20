@@ -37,7 +37,7 @@ public class Application {
     private int base;
 
     private PAdic addition;
-    private PAdic substraction;
+    private PAdic subtraction;
     private PAdic multiplication;
     private PAdic division;
 
@@ -59,7 +59,7 @@ public class Application {
 
     public void calculate() {
         addition = x.add(y);
-        substraction = x.substract(y);
+        subtraction = x.subtract(y);
         multiplication = x.multiply(y);
 
         if (new PAdic("0", this.base).equals(y)) {
@@ -70,16 +70,21 @@ public class Application {
     }
 
     public void print() {
-        Map<String, PAdic> results = new LinkedHashMap<String, PAdic>();
+        Map<String, PAdic> results = new LinkedHashMap<>();
         results.put("| Addition       |", addition);
-        results.put("| Substraction   |", substraction);
+        results.put("| Substraction   |", subtraction);
         results.put("| Multiplication |", multiplication);
         results.put("| Division       |", division);
 
-        int totalLength = Math.max(Math.max(addition.toString().length(), substraction.toString().length()), multiplication.toString().length()) + "| Multiplication |".length() + 3;
+        int totalLength = Math.max(Math.max(addition.toString().length(), subtraction.toString().length()), multiplication.toString().length()) + "| Multiplication |".length() + 3;
 
         if (division != null) {
-            totalLength = Math.max(totalLength, division.toString().length());
+            final int necessary = division.toString().length() + 3 + "| Division       |".length();
+            if (totalLength < necessary) {
+                totalLength = necessary;
+            }
+        } else {
+            totalLength += 6;
         }
 
         final StringBuilder footer = new StringBuilder();
@@ -108,7 +113,7 @@ public class Application {
             nextLine.delete(0, nextLine.length());
 
             nextLine.append(key);
-            nextLine.append(" " + results.get(key));
+            nextLine.append(" ").append(results.get(key));
 
             while (nextLine.length() < totalLength - 2) {
                 nextLine.append(' ');
@@ -120,12 +125,27 @@ public class Application {
         }
     }
 
-    public static void main(String[] args) throws IOException {
+    private static void run(final Application app) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        app.read();
+                    } catch (IOException e) {
+                        System.out.println("Something went wrong while input was parsing.");
+                        break;
+                    }
+
+                    app.calculate();
+                    app.print();
+                }
+            }
+        }).start();
+    }
+
+    public static void main(String[] args) {
         final Application app = new Application();
-        while (true) {
-            app.read();
-            app.calculate();
-            app.print();
-        }
+        Application.run(app);
     }
 }
