@@ -42,7 +42,7 @@ public final class PAdic {
     }
 
     static {
-        len = (1 << 8);
+        len = (1 << 6);
     }
 
     /**
