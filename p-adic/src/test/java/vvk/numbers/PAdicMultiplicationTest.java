@@ -79,7 +79,7 @@ public class PAdicMultiplicationTest {
         y = new PAdic("100", base);
         result = new PAdic("123", base);
 
-        Assert.assertEquals(result, x.multiply(y.multiply(value3).multiply(value3.substract(new PAdic("0", 5)))));
+        Assert.assertEquals(result, x.multiply(y.multiply(value3).multiply(value3.subtract(new PAdic("0", 5)))));
         Assert.assertEquals(result, y.multiply(x));
     }
 }
