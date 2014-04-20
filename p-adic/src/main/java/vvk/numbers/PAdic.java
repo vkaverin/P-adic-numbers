@@ -36,13 +36,13 @@ public final class PAdic {
 
     private static enum Operation {
         ADDITION,
-        SUBSTRACTION,
+        SUBTRACTION,
         MULTIPLICATION,
         DIVISION
     }
 
     static {
-        len = 64;
+        len = (1 << 8);
     }
 
     /**
@@ -220,18 +220,18 @@ public final class PAdic {
     }
 
     /**
-     * Returns difference of p-adic number and <code>substracted</code> value.
-     * @param substracted p-adic number to be substracted.
-     * @return p-adic number that is result of substraction.
+     * Returns difference of p-adic number and <code>subtracted</code> value.
+     * @param subtracted p-adic number to be subtracted.
+     * @return p-adic number that is result of subtraction.
      */
-    public PAdic substract(final PAdic substracted) {
+    public PAdic subtract(final PAdic subtracted) {
 
         PAdic current = null;
         final int[] digits = new int[PAdic.len];
         boolean haveActual = false;
 
-        if (substracted.getOrder() < 0 && substracted.getOrder() < this.getOrder()) {
-            final int diff = Math.abs(substracted.getOrder() - this.getOrder());
+        if (subtracted.getOrder() < 0 && subtracted.getOrder() < this.getOrder()) {
+            final int diff = Math.abs(subtracted.getOrder() - this.getOrder());
 
             for (int i = PAdic.len - 1; i - diff >= 0; --i) {
                 final int idx = i - diff;
@@ -248,17 +248,17 @@ public final class PAdic {
 
         if (current.getOrder() < 0) {
 
-            if (substracted.getOrder() >= 0) {
-                return current.substract(substracted, -current.getOrder());
+            if (subtracted.getOrder() >= 0) {
+                return current.subtract(subtracted, -current.getOrder());
             }
         }
 
-        final int offset = Math.abs(current.getOrder() - substracted.getOrder());
+        final int offset = Math.abs(current.getOrder() - subtracted.getOrder());
 
-        return current.substract(substracted, offset);
+        return current.subtract(subtracted, offset);
     }
 
-    private PAdic substract(final PAdic substracted, final int offset) {
+    private PAdic subtract(final PAdic subtracted, final int offset) {
         final int[] result = new int[PAdic.len];
         boolean takeOne;
 
@@ -268,7 +268,7 @@ public final class PAdic {
 
         for (int i = 0; i + offset < PAdic.len; ++i) {
             final int idx = i + offset;
-            if (digits[idx] < substracted.digits[i]) {
+            if (digits[idx] < subtracted.digits[i]) {
                 takeOne = true;
                 int j = idx + 1;
 
@@ -285,10 +285,10 @@ public final class PAdic {
 
                 digits[idx] += base;
             }
-            result[idx] = digits[idx] - substracted.digits[i];
+            result[idx] = digits[idx] - subtracted.digits[i];
         }
 
-        final int order = PAdic.calculateOrder(result, this.getOrder(), substracted.getOrder(), Operation.SUBSTRACTION);
+        final int order = PAdic.calculateOrder(result, this.getOrder(), subtracted.getOrder(), Operation.SUBTRACTION);
 
         return new PAdic(result, order, this.base);
     }
@@ -311,7 +311,7 @@ public final class PAdic {
         // In some cases when we multiply numbers, it may happens that
         // real index of the most right non-zero coefficient gets greater than it must be.
         // For example, multiplying ...00000.1 (order = -1)  by ...000010 (order = 1)
-        // we will get ...0000010, that is incorrect, because its order must be zero.
+        // we will get ...0000010 (order = 1) that's incorrect, because its order must be zero.
         // So, the order calculated correctly, but we need to shift the result a little to the right.
 
         final int minOrder = Math.min(this.getOrder(), multiplier.getOrder());
@@ -372,7 +372,7 @@ public final class PAdic {
             final int[] tmp = multiplyToInteger(actualDivisor.digits, digit);
 
             result[i] = digit;
-            divided = divided.substract(new PAdic(tmp, 0, this.base), i);
+            divided = divided.subtract(new PAdic(tmp, 0, this.base), i);
         }
 
         final int order = PAdic.calculateOrder(result, this.getOrder() - pos, actualDivisor.getOrder(), Operation.DIVISION);
@@ -392,7 +392,7 @@ public final class PAdic {
     private static int calculateOrder(final int[] digits, final int firstOrder, final int secondOrder, Operation operation) {
         int order = 0;
 
-        if (operation == Operation.ADDITION || operation == Operation.SUBSTRACTION){
+        if (operation == Operation.ADDITION || operation == Operation.SUBTRACTION){
             order = Math.min(firstOrder, secondOrder);
 
             int pos = 0;
