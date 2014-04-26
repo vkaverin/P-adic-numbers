@@ -92,6 +92,30 @@ public class PAdicSubtractionTest {
         y = new PAdic("11", base);
         result = new PAdic("14", base);
         Assert.assertEquals(result, x.subtract(y));
+    }
 
+    @Test
+    public void testSubtractionAgain() {
+        int base = 7;
+        PAdic a = new PAdic("100", base);
+        PAdic b = new PAdic("0.0001", base);
+        PAdic c = new PAdic("123", base);
+        PAdic d = new PAdic("123.0001", base);
+
+        PAdic result = new PAdic("66.6666", base);
+        Assert.assertEquals(result, a.subtract(b));
+
+        result = new PAdic("122.6666", base);
+        Assert.assertEquals(result, c.subtract(b));
+
+        Assert.assertEquals(c, d.subtract(b));
+        Assert.assertEquals(b, d.subtract(c));
+
+        result = new PAdic("23.0001", base);
+        Assert.assertEquals(result, d.subtract(a));
+
+        result = new PAdic("0", base);
+        Assert.assertEquals(result, d.subtract(c).subtract(b));
+        Assert.assertEquals(result, d.subtract(b).subtract(c));
     }
 }

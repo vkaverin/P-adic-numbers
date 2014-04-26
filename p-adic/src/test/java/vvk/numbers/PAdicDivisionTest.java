@@ -44,5 +44,42 @@ public class PAdicDivisionTest {
 
         Assert.assertEquals(two, twoPoint.divide(onePoint));
         Assert.assertEquals(onePoint, twoPoint.divide(two));
+        
+        x = new PAdic(1, 2, 5);
+        y = new PAdic(2, 1, 5);
+        PAdic result = new PAdic(1, 4, 5);
+        Assert.assertEquals(result, x.divide(y));
+
+        x = new PAdic(1, 2, 11);
+        y = new PAdic(2, 1, 11);
+        result = new PAdic(1, 4, 11);
+        Assert.assertEquals(result, x.divide(y));
+
+        x = new PAdic(1, 11, 7);
+        y = new PAdic("1", 7);
+        PAdic z = new PAdic("14", 7);
+
+        Assert.assertEquals(x, y.divide(z));
+    }
+
+    @Test
+    public void testDivisionAgain() {
+        int base = 7;
+
+        PAdic a = new PAdic("11", base);
+        PAdic b = new PAdic("2", base);
+        PAdic c = new PAdic(2, base);
+        PAdic d = new PAdic(4, base);
+
+        PAdic result = new PAdic("1", base);
+        Assert.assertEquals(result, b.divide(c));
+        Assert.assertEquals(d, a.divide(c));
+        Assert.assertEquals(d, a.divide(b));
+        Assert.assertEquals(b, d.divide(c));
+        Assert.assertEquals(c, d.divide(b));
+        Assert.assertEquals(c, d.divide(c));
+        Assert.assertEquals(b, d.divide(b));
+
+
     }
 }
