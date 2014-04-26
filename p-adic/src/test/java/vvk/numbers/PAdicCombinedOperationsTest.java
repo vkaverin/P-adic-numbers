@@ -10,11 +10,8 @@ public class PAdicCombinedOperationsTest {
         PAdic a = new PAdic("11", 7);
         PAdic b = new PAdic("2", 7);
         PAdic c = new PAdic("60", 7);
-        PAdic result1 = a.divide(b);
-        result1 = result1.subtract(b.multiply(new PAdic("2", 7))).add(new PAdic("1", 7));
-        result1 = result1.multiply(c);
-        result1 = result1.subtract(a.multiply(new PAdic("4", 7)));
 
+        PAdic result1 = a.divide(b);
         result1 = result1.subtract(b.multiply(new PAdic("2", 7))).add(new PAdic("1", 7));
         result1 = result1.multiply(c);
         result1 = result1.subtract(a.multiply(new PAdic("4", 7)));
