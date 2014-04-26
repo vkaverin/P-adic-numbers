@@ -243,7 +243,7 @@ public final class PAdic {
         }
 
         if (!haveActual) {
-            current = this;
+            current = (PAdic) this.clone();
         }
 
         if (current.getOrder() < 0) {
@@ -480,6 +480,11 @@ public final class PAdic {
 
     private int gcd(final int a, final int b) {
         return b == 0 ? a : gcd(b, a % b);
+    }
+
+    @Override
+    protected Object clone(){
+        return new PAdic(this.digits, this.order, this.base);
     }
 
     @Override
