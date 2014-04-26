@@ -87,5 +87,11 @@ public class PAdicSubtractionTest {
         result = new PAdic("0.0444", base);
 
         Assert.assertEquals(result, x.subtract(y));
-  }
+
+        x = new PAdic("30", base);
+        y = new PAdic("11", base);
+        result = new PAdic("14", base);
+        Assert.assertEquals(result, x.subtract(y));
+
+    }
 }
