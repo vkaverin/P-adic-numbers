@@ -246,14 +246,16 @@ public final class PAdic {
             current = (PAdic) this.clone();
         }
 
-        if (current.getOrder() < 0) {
-
-            if (subtracted.getOrder() >= 0) {
+        if (current.getOrder() < 0 && subtracted.getOrder() >= 0) {
                 return current.subtract(subtracted, -current.getOrder());
-            }
         }
 
-        final int offset = Math.abs(current.getOrder() - subtracted.getOrder());
+        final int offset;
+        if (current.getOrder() < 0 || subtracted.getOrder() < 0) {
+            offset = Math.abs(Math.min(current.getOrder(), 0) - Math.min(subtracted.getOrder(), 0));
+        } else {
+            offset = 0;
+        }
 
         return current.subtract(subtracted, offset);
     }
