@@ -173,10 +173,11 @@ public final class PAdic {
     private void toNegative() {
         int pos = 0;
 
-        while (pos < PAdic.len && digits[pos] == 0)
+        while (pos < PAdic.len && digits[pos] == 0) {
             ++pos;
+        }
 
-        if (pos < PAdic.len){
+        if (pos < PAdic.len) {
             digits[pos] = base - digits[pos];
         }
 
@@ -192,7 +193,9 @@ public final class PAdic {
      */
     public PAdic add(final PAdic added) {
         if (this.getOrder() < 0 || added.getOrder() < 0) {
-            final int diff = this.getOrder() - added.getOrder();
+            final int leftOperandOrder = Math.min(this.getOrder(), 0);
+            final int rightOperandOrder = Math.min(added.getOrder(), 0);
+            final int diff = leftOperandOrder - rightOperandOrder;
             final int offset = Math.abs(diff);
             return diff < 0 ? this.add(added, offset) : added.add(this, offset);
         }
@@ -225,39 +228,48 @@ public final class PAdic {
      * @return p-adic number that is result of subtraction.
      */
     public PAdic subtract(final PAdic subtracted) {
-
-        PAdic current = null;
+        PAdic actual = null;
         final int[] digits = new int[PAdic.len];
         boolean haveActual = false;
 
         if (subtracted.getOrder() < 0 && subtracted.getOrder() < this.getOrder()) {
-            final int diff = Math.abs(subtracted.getOrder() - this.getOrder());
+            final int diff = Math.abs(subtracted.getOrder() - Math.min(this.getOrder(), 0));
 
             for (int i = PAdic.len - 1; i - diff >= 0; --i) {
                 final int idx = i - diff;
                 digits[i] = this.digits[idx];
             }
 
-            current = new PAdic(digits, this.getOrder() - diff, this.base);
+            final int newOrder = Math.min(this.getOrder(), 0) - diff;
+            actual = new PAdic(digits, newOrder, this.base);
             haveActual = true;
         }
 
         if (!haveActual) {
-            current = (PAdic) this.clone();
+            actual = (PAdic) this.clone();
         }
 
-        if (current.getOrder() < 0 && subtracted.getOrder() >= 0) {
-                return current.subtract(subtracted, -current.getOrder());
+        if (actual.getOrder() < 0 && subtracted.getOrder() >= 0) {
+                return actual.subtract(subtracted, -actual.getOrder());
         }
 
         final int offset;
-        if (current.getOrder() < 0 || subtracted.getOrder() < 0) {
-            offset = Math.abs(Math.min(current.getOrder(), 0) - Math.min(subtracted.getOrder(), 0));
+        if (actual.getOrder() < 0 || subtracted.getOrder() < 0) {
+
+            // Need to shift digits in such way that point was exactly under point.
+            // Example:
+            // _12345.67890  =>  _12345.67890           _      100000   =>    _100000.00000
+            //       123.45  =>     123.45000    OR       12345.12345   =>      12345.12345
+            //  ^^^^^^^^^^^       ^^^^^^^^^^^             ^^^^^^^^^^^          ^^^^^^^^^^^^
+
+            final int leftOperandOrder = Math.min(actual.getOrder(), 0);
+            final int rightOperandOrder = Math.min(subtracted.getOrder(), 0);
+            offset = Math.abs(leftOperandOrder - rightOperandOrder);
         } else {
             offset = 0;
         }
 
-        return current.subtract(subtracted, offset);
+        return actual.subtract(subtracted, offset);
     }
 
     private PAdic subtract(final PAdic subtracted, final int offset) {
@@ -284,7 +296,6 @@ public final class PAdic {
 
                     ++j;
                 }
-
                 digits[idx] += base;
             }
             result[idx] = digits[idx] - subtracted.digits[i];
@@ -453,7 +464,6 @@ public final class PAdic {
             order += pos;
         }
 
-
         return order;
     }
 
@@ -508,6 +518,9 @@ public final class PAdic {
         }
 
         if (order < 0) {
+            while (result.length() < -order) {
+                result.insert(0, '0');
+            }
             result.insert(result.length() + order, '.');
         }
 
