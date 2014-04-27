@@ -407,31 +407,6 @@ public final class PAdic {
 
         if (operation == Operation.ADDITION || operation == Operation.SUBTRACTION){
             order = Math.min(firstOrder, secondOrder);
-
-            int pos = 0;
-
-            while (pos < PAdic.len && digits[pos] == 0) {
-                ++pos;
-            }
-
-            if (pos == PAdic.len) {
-                return 0;
-            }
-
-            if (order >= 0 && order < pos) {
-                order = pos;
-            }
-
-            if (order < 0) {
-                final int min = Math.min(pos, -order);
-                for (int i = 0; i + min < PAdic.len; ++i) {
-                    digits[i] = digits[i + min];
-                }
-
-                order += pos;
-            }
-
-            return order;
         }
 
         if (operation == Operation.MULTIPLICATION) {
