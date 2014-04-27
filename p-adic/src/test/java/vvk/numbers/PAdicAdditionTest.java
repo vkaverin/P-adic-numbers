@@ -79,4 +79,13 @@ public class PAdicAdditionTest {
         Assert.assertEquals(result, y.add(z));
         Assert.assertEquals(result, z.add(y));
     }
+
+    @Test
+    public void testAdditionAgain() {
+        int base = 5;
+        PAdic a = new PAdic("1.234", base);
+        PAdic b = new PAdic("3.211", base);
+        PAdic result = new PAdic("10", base);
+        Assert.assertEquals(result, a.add(b));
+    }
 }
