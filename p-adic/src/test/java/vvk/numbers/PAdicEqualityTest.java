@@ -106,11 +106,47 @@ public class PAdicEqualityTest {
         final int base = 5;
 
         PAdic zeroString = new PAdic("0", base);
+        PAdic severalZerosString = new PAdic("000000000000", base);
+        PAdic zeroPointString = new PAdic("000000.000000", base);
         PAdic zeroInt = new PAdic(0, base);
         PAdic zeroRat = new PAdic(0, 1, base);
 
         Assert.assertEquals(zeroString, zeroInt);
         Assert.assertEquals(zeroString, zeroRat);
         Assert.assertEquals(zeroRat, zeroInt);
+        Assert.assertEquals(severalZerosString, zeroString);
+        Assert.assertEquals(severalZerosString, zeroPointString);
+        Assert.assertEquals(severalZerosString, zeroInt);
+        Assert.assertEquals(severalZerosString, zeroRat);
+        Assert.assertEquals(zeroPointString, zeroInt);
+        Assert.assertEquals(zeroPointString, zeroRat);
+        Assert.assertEquals(zeroPointString, zeroString);
+
+    }
+
+    @Test
+    public void testIndependenceFromMostLeftAndMostRightZeros() {
+        int base = 7;
+        PAdic a = new PAdic("1", base);
+        PAdic b = new PAdic("1.0", base);
+        PAdic c = new PAdic("00001", base);
+        PAdic d = new PAdic("1.000000", base);
+        PAdic e = new PAdic("000001.000000", base);
+
+        Assert.assertEquals(a, a);
+        Assert.assertEquals(a, b);
+        Assert.assertEquals(a, c);
+        Assert.assertEquals(a, d);
+        Assert.assertEquals(a, e);
+        Assert.assertEquals(b, b);
+        Assert.assertEquals(b, c);
+        Assert.assertEquals(b, d);
+        Assert.assertEquals(b, e);
+        Assert.assertEquals(c, c);
+        Assert.assertEquals(c, d);
+        Assert.assertEquals(c, e);
+        Assert.assertEquals(d, d);
+        Assert.assertEquals(d, e);
+        Assert.assertEquals(e, e);
     }
 }

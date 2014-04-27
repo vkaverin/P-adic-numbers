@@ -46,5 +46,5 @@ public class PAdicOrderTest {
         Assert.assertEquals(2, new PAdic(25, base).getOrder());
         Assert.assertEquals(1, new PAdic(5, 6, base).getOrder());
         Assert.assertEquals(0, new PAdic(0, 1, base).getOrder());
-    }
+        Assert.assertEquals(1, new PAdic("1.234", base).add(new PAdic("3.211", base)).getOrder());    }
 }
