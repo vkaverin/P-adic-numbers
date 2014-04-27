@@ -49,7 +49,7 @@ public final class PAdic {
      * Constructs p-adic number from integer value.
      * @param value integer value in base 10.
      * @param base base of field of p-adic numbers.
-     *             Note, that base must be a prime number.
+     *             Notice that base must be a prime number.
      */
     public PAdic(final long value, final int base) {
         this.digits = new int[PAdic.len];
@@ -82,12 +82,11 @@ public final class PAdic {
      * Constructs p-adic number from its string representation.
      * @param value string that represents p-adic number.
      *              It can be either integer value or floating point value.
-     *              Note, that point can be defined by '.' symbol only.
+     *              Notice that point can be defined by '.' symbol only.
      * @param base base of field of p-adic numbers.
-     *             Note, that base must be a prime number.
+     *             Notice that base must be a prime number.
      */
     public PAdic(final String value, final int base) {
-
         this.digits = new int[PAdic.len];
         this.base = base;
 
@@ -147,7 +146,7 @@ public final class PAdic {
      * @param numerator numerator of the fraction in base 10. Must be integer value.
      * @param denominator denominator of the fracture in base 10. Denominator must be positive.
      * @param base base of field of p-adic numbers.
-     *             Note, that base must be a prime number.
+     *             Notice that base must be a prime number.
      */
     public PAdic(final int numerator, final int denominator, final int base) {
         final int g = gcd(Math.abs(numerator), Math.abs(denominator));
