@@ -87,6 +87,10 @@ public class Application {
             totalLength += 6;
         }
 
+        if (totalLength < 27) { // Length of "| Operation      | Result |"
+            totalLength = 27;
+        }
+
         final StringBuilder footer = new StringBuilder();
 
         while (footer.length() < totalLength) {
@@ -101,10 +105,6 @@ public class Application {
 
         final StringBuilder nextLine = new StringBuilder();
         nextLine.append("| Operation      | Result");
-
-        if (totalLength < 27) { // Length of "| Operation      | Result |"
-            totalLength = 27;
-        }
 
         while (nextLine.length() < totalLength - 1) {
             nextLine.append(' ');
