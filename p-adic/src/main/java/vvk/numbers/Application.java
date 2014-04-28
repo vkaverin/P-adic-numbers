@@ -48,13 +48,22 @@ public class Application {
     public void read() throws IOException {
         System.out.print("Base = ");
         this.base = Integer.valueOf(READER.readLine());
+        new PAdic(1, this.base);
         String value;
         System.out.print("x = ");
         value = READER.readLine();
-        x = new PAdic(value, base);
+        String[] rational = value.split("/");
+        x = new PAdic(Integer.valueOf(rational[0]), this.base);
+        if (rational.length > 1) {
+            x = x.divide(new PAdic(Integer.valueOf(rational[1]), this.base));
+        }
         System.out.print("y = ");
         value = READER.readLine();
-        y = new PAdic(value, base);
+        rational = value.split("/");
+        y = new PAdic(Integer.valueOf(rational[0]), this.base);
+        if (rational.length > 1) {
+            y = y.divide(new PAdic(Integer.valueOf(rational[1]), this.base));
+        }
     }
 
     public void calculate() {
@@ -138,7 +147,10 @@ public class Application {
                         app.read();
                     } catch (IOException e) {
                         System.out.println("Something went wrong while input was parsing.");
-                        break;
+                        continue;
+                    } catch (RuntimeException e) {
+                        System.out.println(e.getMessage());
+                        continue;
                     }
 
                     app.calculate();
