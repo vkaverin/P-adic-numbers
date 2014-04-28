@@ -28,9 +28,10 @@ import java.util.Arrays;
 
 public final class PAdic {
 
-    private final int base;
     private static final int len;
-
+    private static final boolean[] isPrime;
+    private static int precalculatedPrimes;
+    private final int base;
     private final int digits[];
     private final int order;
 
@@ -43,6 +44,9 @@ public final class PAdic {
 
     static {
         len = (1 << 6);
+        precalculatedPrimes = (1 << 16);
+        isPrime = new boolean[precalculatedPrimes];
+        doEratostheneSieve();
     }
 
     /**
@@ -52,6 +56,8 @@ public final class PAdic {
      *             Notice that base must be a prime number.
      */
     public PAdic(final long value, final int base) {
+        PAdic.checkForPrime(base);
+    
         this.digits = new int[PAdic.len];
         this.base = base;
 
@@ -87,6 +93,8 @@ public final class PAdic {
      *             Notice that base must be a prime number.
      */
     public PAdic(final String value, final int base) {
+        PAdic.checkForPrime(base);
+            
         this.digits = new int[PAdic.len];
         this.base = base;
 
@@ -149,6 +157,8 @@ public final class PAdic {
      *             Notice that base must be a prime number.
      */
     public PAdic(final int numerator, final int denominator, final int base) {
+        PAdic.checkForPrime(base);
+
         final int g = gcd(Math.abs(numerator), Math.abs(denominator));
         final int actualNumerator = numerator / g;
         final int actualDenominator = denominator / g;
@@ -164,6 +174,8 @@ public final class PAdic {
     }
 
     private PAdic(final int[] digits, final int order, final int base) {
+        PAdic.checkForPrime(base);
+    
         this.base = base;
         this.digits = Arrays.copyOfRange(digits, 0, PAdic.len);
         this.order = order;
@@ -191,6 +203,8 @@ public final class PAdic {
      * @return p-adic number that is result of sum.
      */
     public PAdic add(final PAdic added) {
+        PAdic.checkForBaseEquality(this, added);
+    
         if (this.getOrder() < 0 || added.getOrder() < 0) {
             final int leftOperandOrder = Math.min(this.getOrder(), 0);
             final int rightOperandOrder = Math.min(added.getOrder(), 0);
@@ -203,6 +217,8 @@ public final class PAdic {
     }
 
     private PAdic add(final PAdic added, int offset) {
+        PAdic.checkForBaseEquality(this, added);
+
         final int[] result = new int[PAdic.len];
         int toNext = 0;
 
@@ -227,6 +243,8 @@ public final class PAdic {
      * @return p-adic number that is result of subtraction.
      */
     public PAdic subtract(final PAdic subtracted) {
+        PAdic.checkForBaseEquality(this, subtracted);
+        
         PAdic actual = null;
         final int[] digits = new int[PAdic.len];
         boolean haveActual = false;
@@ -272,6 +290,8 @@ public final class PAdic {
     }
 
     private PAdic subtract(final PAdic subtracted, final int offset) {
+        PAdic.checkForBaseEquality(this, subtracted);
+        
         final int[] result = new int[PAdic.len];
         boolean takeOne;
 
@@ -311,6 +331,7 @@ public final class PAdic {
      * @return p-adic number that is result of multiplication.
      */
     public PAdic multiply(final PAdic multiplier) {
+        PAdic.checkForBaseEquality(this, multiplier);
 
         PAdic result = new PAdic("0", this.base);
 
@@ -352,6 +373,8 @@ public final class PAdic {
      * @return p-adic number that is result of division.
      */
     public PAdic divide(final PAdic divisor) {
+        PAdic.checkForBaseEquality(this, divisor);
+        
         final int[] result = new int[PAdic.len];
 
         PAdic divided = new PAdic(this.digits, 0, this.base);
@@ -464,6 +487,37 @@ public final class PAdic {
         return -1;
     }
 
+    private static void doEratostheneSieve() {
+        Arrays.fill(isPrime, true);
+        isPrime[0] = isPrime[1] = false;
+    
+        for (int i = 2; i * i < precalculatedPrimes; ++i) {
+            if (!isPrime[i]) {
+                continue;
+            }
+            
+            for (int j = i + i; j < precalculatedPrimes; j += i) {
+                isPrime[j] = false;
+            }
+        }
+    }
+    
+    private static void checkForPrime(final int base) {
+        final boolean isPrimeBase = (base < precalculatedPrimes && isPrime[base]);
+        
+        if (!isPrimeBase) {
+            throw new RuntimeException("Base " + base + " is not prime. Base must be a prime number.");
+        }
+    }
+
+    private static void checkForBaseEquality(final PAdic first, final PAdic second) {
+        final boolean areEqual = (first.base == second.base);
+        
+        if (!areEqual) {
+            throw new RuntimeException("Mathematical operations can be done only with p-adic numbers that have the same base.");
+        }
+    }
+    
     private int gcd(final int a, final int b) {
         return b == 0 ? a : gcd(b, a % b);
     }
