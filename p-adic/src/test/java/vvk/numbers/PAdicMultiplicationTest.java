@@ -27,6 +27,8 @@ package vvk.numbers;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.math.BigInteger;
+
 public class PAdicMultiplicationTest {
     
     @Test
@@ -42,14 +44,14 @@ public class PAdicMultiplicationTest {
         PAdic result = new PAdic("222.2", 5);
         Assert.assertEquals(two.multiply(point), result);
         
-        PAdic value1 = new PAdic(1, 6, 5);
-        PAdic value2 = new PAdic(6, 1, 5);
-        PAdic value3 = new PAdic(1, 5);
-        PAdic value4 = new PAdic(2, base);
+        PAdic value1 = new PAdic(new BigInteger("1"), new BigInteger("6"), 5);
+        PAdic value2 = new PAdic(new BigInteger("6"), new BigInteger("1"), 5);
+        PAdic value3 = new PAdic(new BigInteger("1"), 5);
+        PAdic value4 = new PAdic(new BigInteger("2"), base);
         PAdic value5 = new PAdic("0.1", base);
-        PAdic value6 = new PAdic(5, base);
-        PAdic value0 = new PAdic(0, base);
-        PAdic value8 = new PAdic(1, 2, base);
+        PAdic value6 = new PAdic(new BigInteger("5"), base);
+        PAdic value0 = new PAdic(BigInteger.ZERO, base);
+        PAdic value8 = new PAdic(new BigInteger("1"), new BigInteger("2"), base);
         PAdic value9 = new PAdic("0.01", base);
         
         Assert.assertEquals(value3, value1.multiply(value2));
@@ -63,7 +65,7 @@ public class PAdicMultiplicationTest {
         Assert.assertEquals(value9, value9.multiply(value3));
         Assert.assertEquals(value3, value3.multiply(value3).multiply(value3).multiply(value3).multiply(value3).multiply(value3).multiply(value3).multiply(value3).multiply(value3).multiply(value3).multiply(value3).multiply(value3).multiply(value3).multiply(value3).multiply(value3).multiply(value3).multiply(value3).multiply(value3).multiply(value3).multiply(value3));
 
-        PAdic value10 = new PAdic(25, base);
+        PAdic value10 = new PAdic(new BigInteger("25"), base);
 
         Assert.assertEquals(value6, value10.multiply(value5));
         Assert.assertEquals(value6, value5.multiply(value10));
@@ -81,5 +83,10 @@ public class PAdicMultiplicationTest {
 
         Assert.assertEquals(result, x.multiply(y.multiply(value3).multiply(value3.subtract(new PAdic("0", 5)))));
         Assert.assertEquals(result, y.multiply(x));
+    }
+
+    @Test
+    public void testMultiplication_2() {
+
     }
 }

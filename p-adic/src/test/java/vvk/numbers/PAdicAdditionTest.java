@@ -27,6 +27,8 @@ package vvk.numbers;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.math.BigInteger;
+
 public class PAdicAdditionTest {
 
     @Test
@@ -37,7 +39,7 @@ public class PAdicAdditionTest {
         PAdic x = new PAdic("122", 5);
         PAdic y = new PAdic("221", base);
         PAdic z = new PAdic("10", base);
-        PAdic zneg = new PAdic(-5, base);
+        PAdic zneg = new PAdic(new BigInteger("-5"), base);
 
         Assert.assertEquals(new PAdic("343", base), x.add(y));
         Assert.assertEquals(new PAdic("244", base), x.add(x));
@@ -46,7 +48,7 @@ public class PAdicAdditionTest {
 
         x = new PAdic("123", base);
         y = new PAdic("0.1", base);
-        z = new PAdic(-1, 5, base);
+        z = new PAdic(new BigInteger("-1"), new BigInteger("5"), base);
 
         Assert.assertEquals(new PAdic("123.1", base), x.add(y));
         Assert.assertEquals(x, x.add(y).add(z));
@@ -86,6 +88,17 @@ public class PAdicAdditionTest {
         PAdic a = new PAdic("1.234", base);
         PAdic b = new PAdic("3.211", base);
         PAdic result = new PAdic("10", base);
+        Assert.assertEquals(result, a.add(b));
+
+        a = new PAdic("123", 7);
+        b = new PAdic("123", 7);
+        result = new PAdic("246", 7);
+
+        Assert.assertEquals(result, a.add(b));
+
+        a = new PAdic("123.456", 7);
+        b = new PAdic("654.321", 7);
+        result = new PAdic("1111.11", 7);
         Assert.assertEquals(result, a.add(b));
     }
 }

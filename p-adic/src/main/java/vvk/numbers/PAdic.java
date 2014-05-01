@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 package vvk.numbers;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 
 public final class PAdic {
@@ -52,22 +53,24 @@ public final class PAdic {
     /**
      * Constructs p-adic number from integer value.
      * @param value integer value in base 10.
-     * @param base base of field of p-adic numbers.
+     * @param base base of the p-adic number.
      *             Notice that base must be a prime number.
      */
-    public PAdic(final long value, final int base) {
+    public PAdic(final BigInteger value, final int base) {
         PAdic.checkForPrime(base);
     
         this.digits = new int[PAdic.len];
         this.base = base;
 
-        final boolean isNegative = (value < 0);
-        long current = Math.abs(value);
+        final BigInteger bigBase = new BigInteger("" + base);
+
+        final boolean isNegative = (value.signum() < 0);
+        BigInteger current = value.abs();
         int pos = 0;
 
-        while (current != 0) {
-            digits[pos] = (int) current % base;
-            current /= base;
+        while (!BigInteger.ZERO.equals(current)) {
+            digits[pos] = (int) (current.mod(bigBase).longValue());
+            current = current.divide(bigBase);
             ++pos;
         }
 
@@ -86,17 +89,19 @@ public final class PAdic {
 
     /**
      * Constructs p-adic number from its string representation.
-     * @param value string that represents p-adic number.
+     * @param number string that represents p-adic number.
      *              It can be either integer value or floating point value.
      *              Notice that point can be defined by '.' symbol only.
-     * @param base base of field of p-adic numbers.
+     * @param base base of the p-adic number.
      *             Notice that base must be a prime number.
      */
-    public PAdic(final String value, final int base) {
+    public PAdic(final String number, final int base) {
         PAdic.checkForPrime(base);
             
         this.digits = new int[PAdic.len];
         this.base = base;
+
+        final String value = number.trim();
 
         final int pointAt = value.lastIndexOf('.');
         int posInString = value.length() - 1;
@@ -153,15 +158,15 @@ public final class PAdic {
      * Constructs p-adic number from rational fraction.
      * @param numerator numerator of the fraction in base 10. Must be integer value.
      * @param denominator denominator of the fracture in base 10. Denominator must be positive.
-     * @param base base of field of p-adic numbers.
+     * @param base base of the p-adic number.
      *             Notice that base must be a prime number.
      */
-    public PAdic(final int numerator, final int denominator, final int base) {
+    public PAdic(final BigInteger numerator, final BigInteger denominator, final int base) {
         PAdic.checkForPrime(base);
 
-        final int g = gcd(Math.abs(numerator), Math.abs(denominator));
-        final int actualNumerator = numerator / g;
-        final int actualDenominator = denominator / g;
+        final BigInteger gcd = numerator.abs().gcd(denominator.abs());
+        final BigInteger actualNumerator = numerator.divide(gcd);
+        final BigInteger actualDenominator = denominator.divide(gcd);
 
         final PAdic pAdicNumerator = new PAdic(actualNumerator, base);
         final PAdic pAdicDenominator = new PAdic(actualDenominator, base);
@@ -173,11 +178,36 @@ public final class PAdic {
         this.base = pAdicResult.base;
     }
 
-    private PAdic(final int[] digits, final int order, final int base) {
+    /**
+     * Constructs p-adic number from number sequence.
+     * Indexes of coefficients in the sequence go from smaller to bigger.
+     * For example, 7-adic number 123.456 can be built as following:
+     * <code>
+     *     final int[] sequence = {6, 5, 4, 3, 2 1};
+     *     final int order = -3;
+     *     final int base = 7;
+     *     final PAdic pAdicNumber = new PAdic(sequence, order, base);
+     * </code>
+     * @param digits sequence of p-adic digits that p-adic number must be built from.
+     *               All the digits must be nonnegative and less than base of the p-adic number.
+     * @param order order of the p-adic number.
+     * @param base base of of p-adic number.
+     *             Notice that base must be a prime number.
+     */
+    public PAdic(final int[] digits, final int order, final int base) {
         PAdic.checkForPrime(base);
     
         this.base = base;
-        this.digits = Arrays.copyOfRange(digits, 0, PAdic.len);
+        this.digits = new int[PAdic.len];
+        for (int i = 0; i < Math.min(digits.length, PAdic.len); ++i) {
+            if (digits[i] < 0) {
+                throw new RuntimeException("P-adic number cannot be built from sequence that contains negative numbers.");
+            } else if (digits[i] >= this.base) {
+                throw new RuntimeException("P-adic number cannot be built from sequence that contains digits that are greater or equal to base.");
+            }
+
+            this.digits[i] = digits[i];
+        }
         this.order = order;
     }
 

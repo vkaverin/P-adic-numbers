@@ -27,13 +27,15 @@ package vvk.numbers;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.math.BigInteger;
+
 public class PAdicSubtractionTest {
 
     @Test
     public void testsubtraction() {
         final int base = 5;
 
-        PAdic rat = new PAdic(1, 5, 5);
+        PAdic rat = new PAdic(new BigInteger("1"), new BigInteger("5"), 5);
         PAdic point = new PAdic("0.1", 5);
 
         PAdic zero = new PAdic("0", 5);

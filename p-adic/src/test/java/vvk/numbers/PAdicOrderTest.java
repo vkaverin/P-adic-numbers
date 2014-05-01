@@ -27,6 +27,8 @@ package vvk.numbers;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.math.BigInteger;
+
 public class PAdicOrderTest {
 
     @Test
@@ -37,14 +39,14 @@ public class PAdicOrderTest {
         Assert.assertEquals(-2, new PAdic("123.12", base).getOrder());
         Assert.assertEquals(0, new PAdic("12312", base).getOrder());
         Assert.assertEquals(-2, new PAdic("123.120000", base).getOrder());
-        Assert.assertEquals(-1, new PAdic(5, 25, base).getOrder());
-        Assert.assertEquals(1, new PAdic(25, 5, base).getOrder());
-        Assert.assertEquals(2, new PAdic(25, 3, base).getOrder());
-        Assert.assertEquals(-2, new PAdic(3, 25, base).getOrder());
-        Assert.assertEquals(0, new PAdic(3, 6, base).getOrder());
-        Assert.assertEquals(1, new PAdic(5, base).getOrder());
-        Assert.assertEquals(2, new PAdic(25, base).getOrder());
-        Assert.assertEquals(1, new PAdic(5, 6, base).getOrder());
-        Assert.assertEquals(0, new PAdic(0, 1, base).getOrder());
+        Assert.assertEquals(-1, new PAdic(new BigInteger("5"), new BigInteger("25"), base).getOrder());
+        Assert.assertEquals(1, new PAdic(new BigInteger("25"), new BigInteger("5"), base).getOrder());
+        Assert.assertEquals(2, new PAdic(new BigInteger("25"), new BigInteger("3"), base).getOrder());
+        Assert.assertEquals(-2, new PAdic(new BigInteger("3"), new BigInteger("25"), base).getOrder());
+        Assert.assertEquals(0, new PAdic(new BigInteger("3"), new BigInteger("6"), base).getOrder());
+        Assert.assertEquals(1, new PAdic(new BigInteger("5"), base).getOrder());
+        Assert.assertEquals(2, new PAdic(new BigInteger("25"), base).getOrder());
+        Assert.assertEquals(1, new PAdic(new BigInteger("5"), new BigInteger("6"), base).getOrder());
+        Assert.assertEquals(0, new PAdic(BigInteger.ZERO, BigInteger.ONE, base).getOrder());
         Assert.assertEquals(1, new PAdic("1.234", base).add(new PAdic("3.211", base)).getOrder());    }
 }

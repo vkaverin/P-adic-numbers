@@ -25,6 +25,7 @@ THE SOFTWARE.
 package vvk.numbers;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -47,23 +48,49 @@ public class Application {
 
     public void read() throws IOException {
         System.out.print("Base = ");
-        this.base = Integer.valueOf(READER.readLine());
-        new PAdic(1, this.base);
+        this.base = Integer.valueOf(READER.readLine().trim());
+        new PAdic(BigInteger.ONE, this.base);
+
         String value;
         System.out.print("x = ");
         value = READER.readLine();
-        String[] rational = value.split("/");
-        x = new PAdic(Integer.valueOf(rational[0]), this.base);
-        if (rational.length > 1) {
-            x = x.divide(new PAdic(Integer.valueOf(rational[1]), this.base));
+
+        if (value.contains("/")) {
+            final String[] rational = value.split("/");
+            x = new PAdic(new BigInteger(rational[0].trim()), base).divide(new PAdic(new BigInteger(rational[1].trim()), base));
+        } else if (value.contains(",")) {
+            final String[] sequence = value.split(",");
+            final int[] digits = new int[sequence.length];
+            for (int i = 0; i < sequence.length; ++i) {
+                digits[i] = Integer.valueOf(sequence[i].trim());
+            }
+            System.out.print("Order of x = ");
+            value = READER.readLine();
+            final int order = Integer.valueOf(value.trim());
+            x = new PAdic(digits, order, base);
+        } else {
+            x = new PAdic(value.trim(), base);
         }
+
         System.out.print("y = ");
         value = READER.readLine();
-        rational = value.split("/");
-        y = new PAdic(Integer.valueOf(rational[0]), this.base);
-        if (rational.length > 1) {
-            y = y.divide(new PAdic(Integer.valueOf(rational[1]), this.base));
+        if (value.contains("/")) {
+            final String[] rational = value.split("/");
+            y = new PAdic(new BigInteger(rational[0].trim()), base).divide(new PAdic(new BigInteger(rational[1].trim()), base));
+        } else if (value.contains(",")) {
+            final String[] sequence = value.split(",");
+            final int[] digits = new int[sequence.length];
+            for (int i = 0; i < sequence.length; ++i) {
+                digits[i] = Integer.valueOf(sequence[i].trim());
+            }
+            System.out.print("Order of x = ");
+            value = READER.readLine();
+            final int order = Integer.valueOf(value.trim());
+            y = new PAdic(digits, order, base);
+        } else {
+            y = new PAdic(value.trim(), base);
         }
+
     }
 
     public void calculate() {
@@ -79,7 +106,7 @@ public class Application {
     }
 
     public void print() {
-        Map<String, PAdic> results = new LinkedHashMap<>();
+        Map<String, PAdic> results = new LinkedHashMap<String, PAdic>();
         results.put("| Addition       |", addition);
         results.put("| Substraction   |", subtraction);
         results.put("| Multiplication |", multiplication);
@@ -126,7 +153,13 @@ public class Application {
             nextLine.delete(0, nextLine.length());
 
             nextLine.append(key);
-            nextLine.append(" ").append(results.get(key));
+
+            final PAdic result = results.get(key);
+            if (result == null) {
+                nextLine.append(" ").append("N/A");
+            } else {
+                nextLine.append(" ").append(result);
+            }
 
             while (nextLine.length() < totalLength - 2) {
                 nextLine.append(' ');

@@ -27,16 +27,18 @@ package vvk.numbers;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.math.BigInteger;
+
 public class PAdicEqualityTest {
 
     @Test
     public void testEquality() {
         final int base = 5;
 
-        PAdic rational1 = new PAdic(5, 1, base);
-        PAdic rational1_neg = new PAdic(-5, -1, base);
+        PAdic rational1 = new PAdic(new BigInteger("5"), new BigInteger("1"), base);
+        PAdic rational1_neg = new PAdic(new BigInteger("-5"), new BigInteger("-1"), base);
         PAdic string1 = new PAdic("10", base);
-        PAdic integer1 = new PAdic(5, base);
+        PAdic integer1 = new PAdic(new BigInteger("5"), base);
 
         Assert.assertEquals(rational1, string1);
         Assert.assertEquals(string1, integer1);
@@ -53,9 +55,9 @@ public class PAdicEqualityTest {
         PAdic point2 = new PAdic("0.01", base);
         PAdic point3 = new PAdic("0.001", base);
         PAdic point4 = new PAdic("0000.100000", base);
-        PAdic rat1 = new PAdic(1, 5, base);
-        PAdic rat2 = new PAdic(1, 25, base);
-        PAdic rat3 = new PAdic(1, 125, base);
+        PAdic rat1 = new PAdic(new BigInteger("1"), new BigInteger("5"), base);
+        PAdic rat2 = new PAdic(new BigInteger("1"), new BigInteger("25"), base);
+        PAdic rat3 = new PAdic(new BigInteger("1"), new BigInteger("125"), base);
 
         Assert.assertEquals(point1, rat1);
         Assert.assertEquals(point2, rat2);
@@ -79,14 +81,14 @@ public class PAdicEqualityTest {
         Assert.assertEquals(str4, str1);
         Assert.assertEquals(str4, str2);
 
-        PAdic int1 = new PAdic(2, base);
+        PAdic int1 = new PAdic(new BigInteger("2"), base);
         PAdic strx = new PAdic("2", base);
 
-        PAdic ratx = new PAdic(1, 2, base);
-        PAdic raty = new PAdic(-1, -2, base);
+        PAdic ratx = new PAdic(new BigInteger("1"), new BigInteger("2"), base);
+        PAdic raty = new PAdic(new BigInteger("-1"), new BigInteger("-2"), base);
 
-        PAdic ratz = new PAdic(2, 1, base);
-        PAdic ratn = new PAdic(-2, -1, base);
+        PAdic ratz = new PAdic(new BigInteger("2"), new BigInteger("1"), base);
+        PAdic ratn = new PAdic(new BigInteger("-2"), new BigInteger("-1"), base);
 
         Assert.assertEquals(int1, strx);
         Assert.assertEquals(ratx, raty);
@@ -108,8 +110,8 @@ public class PAdicEqualityTest {
         PAdic zeroString = new PAdic("0", base);
         PAdic severalZerosString = new PAdic("000000000000", base);
         PAdic zeroPointString = new PAdic("000000.000000", base);
-        PAdic zeroInt = new PAdic(0, base);
-        PAdic zeroRat = new PAdic(0, 1, base);
+        PAdic zeroInt = new PAdic(new BigInteger("0"), base);
+        PAdic zeroRat = new PAdic(new BigInteger("0"), new BigInteger("1"), base);
 
         Assert.assertEquals(zeroString, zeroInt);
         Assert.assertEquals(zeroString, zeroRat);
@@ -125,7 +127,7 @@ public class PAdicEqualityTest {
     }
 
     @Test
-    public void testIndependenceFromMostLeftAndMostRightZeros() {
+    public void testIndependenceFromRedundantZeros() {
         int base = 7;
         PAdic a = new PAdic("1", base);
         PAdic b = new PAdic("1.0", base);
@@ -148,5 +150,14 @@ public class PAdicEqualityTest {
         Assert.assertEquals(d, d);
         Assert.assertEquals(d, e);
         Assert.assertEquals(e, e);
+    }
+
+    @Test
+    public void testSequenceRepresentation() {
+        int[] a = {6, 5, 4, 3, 2, 1};
+        PAdic x = new PAdic(a, -3, 7);
+        PAdic result = new PAdic("123.456", 7);
+
+        Assert.assertEquals(result, x);
     }
 }
