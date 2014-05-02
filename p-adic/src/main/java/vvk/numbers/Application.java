@@ -33,8 +33,8 @@ public class Application {
 
     private static final BufferedReader READER;
 
-    private PAdic x;
-    private PAdic y;
+    private PAdic a;
+    private PAdic b;
     private int base;
 
     private PAdic addition;
@@ -46,62 +46,68 @@ public class Application {
         READER = new BufferedReader(new InputStreamReader(System.in));
     }
 
+    private PAdic readNext() throws IOException {
+        String value = READER.readLine();
+        if (value.contains("/")) {
+            final String[] rational = value.split("/");
+            return new PAdic(new BigInteger(rational[0].trim()), base).divide(new PAdic(new BigInteger(rational[1].trim()), base));
+        } else if (value.contains(",")) {
+            final String[] sequence = value.split(",");
+            final int[] digits = new int[sequence.length];
+            for (int i = 0; i < sequence.length; ++i) {
+                digits[i] = Integer.valueOf(sequence[i].trim());
+            }
+            System.out.print("Order = ");
+            value = READER.readLine();
+            final int order = Integer.valueOf(value.trim());
+            return new PAdic(digits, order, base);
+        } else {
+            return  new PAdic(value.trim(), base);
+        }
+    }
+
     public void read() throws IOException {
         System.out.print("Base = ");
         this.base = Integer.valueOf(READER.readLine().trim());
         new PAdic(BigInteger.ONE, this.base);
 
-        String value;
-        System.out.print("x = ");
-        value = READER.readLine();
-
-        if (value.contains("/")) {
-            final String[] rational = value.split("/");
-            x = new PAdic(new BigInteger(rational[0].trim()), base).divide(new PAdic(new BigInteger(rational[1].trim()), base));
-        } else if (value.contains(",")) {
-            final String[] sequence = value.split(",");
-            final int[] digits = new int[sequence.length];
-            for (int i = 0; i < sequence.length; ++i) {
-                digits[i] = Integer.valueOf(sequence[i].trim());
+        boolean readSuccessfully = false;
+        while (!readSuccessfully) {
+            System.out.print("A = ");
+            try {
+                a = readNext();
+                readSuccessfully = true;
+            } catch (RuntimeException e) {
+                System.out.println(e.getMessage());
+                readSuccessfully = false;
             }
-            System.out.print("Order of x = ");
-            value = READER.readLine();
-            final int order = Integer.valueOf(value.trim());
-            x = new PAdic(digits, order, base);
-        } else {
-            x = new PAdic(value.trim(), base);
         }
 
-        System.out.print("y = ");
-        value = READER.readLine();
-        if (value.contains("/")) {
-            final String[] rational = value.split("/");
-            y = new PAdic(new BigInteger(rational[0].trim()), base).divide(new PAdic(new BigInteger(rational[1].trim()), base));
-        } else if (value.contains(",")) {
-            final String[] sequence = value.split(",");
-            final int[] digits = new int[sequence.length];
-            for (int i = 0; i < sequence.length; ++i) {
-                digits[i] = Integer.valueOf(sequence[i].trim());
-            }
-            System.out.print("Order of x = ");
-            value = READER.readLine();
-            final int order = Integer.valueOf(value.trim());
-            y = new PAdic(digits, order, base);
-        } else {
-            y = new PAdic(value.trim(), base);
-        }
+        System.out.println("Variable A interpreted as " + a);
 
-    }
+        readSuccessfully = false;
+        while (!readSuccessfully) {
+            System.out.print("B = ");
+            try {
+                b = readNext();
+                readSuccessfully = true;
+            } catch (RuntimeException e) {
+                System.out.println(e.getMessage());
+                readSuccessfully = false;
+            }
+        }
+        System.out.println("Variable B interpreted as " + b);
+     }
 
     public void calculate() {
-        addition = x.add(y);
-        subtraction = x.subtract(y);
-        multiplication = x.multiply(y);
+        addition = a.add(b);
+        subtraction = a.subtract(b);
+        multiplication = a.multiply(b);
 
-        if (new PAdic("0", this.base).equals(y)) {
+        if (new PAdic("0", this.base).equals(b)) {
             division = null;
         } else {
-            division = x.divide(y);
+            division = a.divide(b);
         }
     }
 
@@ -151,7 +157,6 @@ public class Application {
 
         for (String key: results.keySet()) {
             nextLine.delete(0, nextLine.length());
-
             nextLine.append(key);
 
             final PAdic result = results.get(key);
