@@ -159,5 +159,40 @@ public class PAdicEqualityTest {
         PAdic result = new PAdic("123.456", 7);
 
         Assert.assertEquals(result, x);
+
+        a = new int[] {2};
+        x = new PAdic(a, 2, 7);
+        result = new PAdic("200", 7);
+
+        Assert.assertEquals(result, x);
+
+        a = new int[] {0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 0};
+        x = new PAdic(a, -2, 7);
+        result = new PAdic("0.32", 7);
+        Assert.assertEquals(result, x);
+
+        a = new int[] {0, 0, 0, 0, 0, 2, 3};
+        Assert.assertEquals(result, x);
+
+        a = new int[] {2, 3};
+        Assert.assertEquals(result, x);
+
+        x = new PAdic(a, 2, 7);
+        result = new PAdic("3200", 7);
+        Assert.assertEquals(result, x);
+
+        a = new int[] {2, 3, 4, 5};
+        x = new PAdic(a, 2, 7);
+        result = new PAdic("543200", 7);
+        Assert.assertEquals(result, x);
+
+        x = new PAdic(a, -2, 7);
+        result = new PAdic("54.32", 7);
+        Assert.assertEquals(result, x);
+
+        a = new int[] {0, 0, 0, 0, 0, 0, 2, 3, 4};
+        x = new PAdic(a, 2, 7);
+        result = new PAdic("43200", 7);
+        Assert.assertEquals(result, x);
     }
 }
