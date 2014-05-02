@@ -115,7 +115,9 @@ public final class PAdic {
             }
 
             if (!Character.isDigit(value.charAt(posInString))) {
-                throw new RuntimeException("There must be only digits in the number, no letters or spectial symbols except of one floating point");
+                throw new RuntimeException("There can be only digits in the number, no letters or special symbols except of one floating point");
+            } else if (value.charAt(posInString) - '0' >= this.base) {
+                throw new RuntimeException("P-adic number cannot contain digits that are greater or equal to base.");
             }
 
             digits[posInDigits] = value.charAt(posInString) - '0';
@@ -182,31 +184,57 @@ public final class PAdic {
      * Constructs p-adic number from number sequence.
      * Indexes of coefficients in the sequence go from smaller to bigger.
      * For example, 7-adic number 123.456 can be built as following:
-     * <code>
+     * <pre>
      *     final int[] sequence = {6, 5, 4, 3, 2 1};
      *     final int order = -3;
      *     final int base = 7;
      *     final PAdic pAdicNumber = new PAdic(sequence, order, base);
-     * </code>
-     * @param digits sequence of p-adic digits that p-adic number must be built from.
+     * </pre>
+     * In case of inconsistency between sequence and order it will be resolved in way that order wins.
+     * For example, if you will try to build number from sequence <code>{0, 0, 0, 0, 0, 1, 2, 3}</code>
+     * with order 2 then result will be 32100 and first three zeros won't be taken into account.
+     * @param sequence sequence of p-adic digits that p-adic number must be built from.
      *               All the digits must be nonnegative and less than base of the p-adic number.
      * @param order order of the p-adic number.
      * @param base base of of p-adic number.
      *             Notice that base must be a prime number.
      */
-    public PAdic(final int[] digits, final int order, final int base) {
+    public PAdic(final int[] sequence, final int order, final int base) {
+        this(sequence, order, base, true);
+    }
+
+    private PAdic(final int[] sequence, final int order, final int base, final boolean recalculateSequence) {
         PAdic.checkForPrime(base);
     
         this.base = base;
         this.digits = new int[PAdic.len];
-        for (int i = 0; i < Math.min(digits.length, PAdic.len); ++i) {
-            if (digits[i] < 0) {
+
+        int startPosition = 0;
+        int startInSequence = 0;
+
+        if (recalculateSequence) {
+            int pos = 0;
+            while (pos < sequence.length && sequence[pos] == 0) {
+                ++pos;
+            }
+
+            if (order > 0) {
+                startInSequence = pos;
+                startPosition = order;
+            } else if (order < 0 && pos > order) {
+                startPosition = 0;
+                startInSequence = pos;
+            }
+        }
+
+        for (int i = startPosition, posInSequence = startInSequence; posInSequence < sequence.length && i < PAdic.len; ++i, ++posInSequence) {
+            if (sequence[posInSequence] < 0) {
                 throw new RuntimeException("P-adic number cannot be built from sequence that contains negative numbers.");
-            } else if (digits[i] >= this.base) {
+            } else if (sequence[posInSequence] >= this.base) {
                 throw new RuntimeException("P-adic number cannot be built from sequence that contains digits that are greater or equal to base.");
             }
 
-            this.digits[i] = digits[i];
+            this.digits[i] = sequence[posInSequence];
         }
         this.order = order;
     }
@@ -264,7 +292,7 @@ public final class PAdic {
 
         final int order = PAdic.calculateOrder(result, this.getOrder(), added.getOrder(), Operation.ADDITION);
 
-        return new PAdic(result, order, this.base);
+        return new PAdic(result, order, this.base, false);
     }
 
     /**
@@ -288,7 +316,7 @@ public final class PAdic {
             }
 
             final int newOrder = Math.min(this.getOrder(), 0) - diff;
-            actual = new PAdic(digits, newOrder, this.base);
+            actual = new PAdic(digits, newOrder, this.base, false);
             haveActual = true;
         }
 
@@ -352,7 +380,7 @@ public final class PAdic {
 
         final int order = PAdic.calculateOrder(result, this.getOrder(), subtracted.getOrder(), Operation.SUBTRACTION);
 
-        return new PAdic(result, order, this.base);
+        return new PAdic(result, order, this.base, false);
     }
 
     /**
@@ -367,7 +395,7 @@ public final class PAdic {
 
         for (int i = 0; i < PAdic.len; ++i) {
             final int temp[] = multiplyToInteger(digits, multiplier.digits[i]);
-            final PAdic adder = new PAdic(temp, 0, this.base);
+            final PAdic adder = new PAdic(temp, 0, this.base, false);
             result = result.add(adder, i);
         }
 
@@ -394,7 +422,7 @@ public final class PAdic {
 
         final int order = PAdic.calculateOrder(result.digits, this.getOrder(), multiplier.getOrder(), Operation.MULTIPLICATION);
 
-        return new PAdic(result.digits, order, this.base);
+        return new PAdic(result.digits, order, this.base, false);
     }
 
     /**
@@ -407,7 +435,7 @@ public final class PAdic {
         
         final int[] result = new int[PAdic.len];
 
-        PAdic divided = new PAdic(this.digits, 0, this.base);
+        PAdic divided = new PAdic(this.digits, 0, this.base, false);
 
         int pos = 0;
 
@@ -419,10 +447,6 @@ public final class PAdic {
 
         for (int i = 0; i + pos < PAdic.len; ++i) {
             temp[i] = divisor.digits[i + pos];
-        }
-
-        for (int i = PAdic.len - pos; i < PAdic.len; ++i) {
-            temp[i] = temp[PAdic.len - pos - 1];
         }
 
         final PAdic actualDivisor = new PAdic(temp, divisor.getOrder() - pos, this.base);
@@ -437,12 +461,12 @@ public final class PAdic {
             final int[] tmp = multiplyToInteger(actualDivisor.digits, digit);
 
             result[i] = digit;
-            divided = divided.subtract(new PAdic(tmp, 0, this.base), i);
+            divided = divided.subtract(new PAdic(tmp, 0, this.base, false), i);
         }
 
         final int order = PAdic.calculateOrder(result, this.getOrder() - pos, actualDivisor.getOrder(), Operation.DIVISION);
 
-        return new PAdic(result, order, this.base);
+        return new PAdic(result, order, this.base, false);
     }
 
     /**
@@ -554,7 +578,7 @@ public final class PAdic {
 
     @Override
     protected Object clone(){
-        return new PAdic(this.digits, this.order, this.base);
+        return new PAdic(this.digits, this.order, this.base, false);
     }
 
     @Override
