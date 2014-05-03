@@ -75,7 +75,10 @@ public final class PAdic {
         }
 
         if (isNegative) {
-            toNegative();
+            final PAdic temp = this.negative();
+            for (int i = 0; i < PAdic.len; ++i) {
+                this.digits[i] = temp.digits[i];
+            }
         }
 
         int order = 0;
@@ -239,20 +242,28 @@ public final class PAdic {
         this.order = order;
     }
 
-    private void toNegative() {
+    /**
+     * Returns value that gives zero in addition with this number.
+     * @return number that is opposite to this one.
+     */
+    public PAdic negative() {
         int pos = 0;
+        
+        final int[] sequence = new int[PAdic.len];
 
-        while (pos < PAdic.len && digits[pos] == 0) {
+        while (pos < PAdic.len && this.digits[pos] == 0) {
             ++pos;
         }
 
         if (pos < PAdic.len) {
-            digits[pos] = base - digits[pos];
+            sequence[pos] = base - this.digits[pos];
         }
 
         for (int i = pos + 1; i < PAdic.len; ++i) {
-            digits[i] = base - digits[i] - 1;
+            sequence[i] = base - this.digits[i] - 1;
         }
+        
+        return new PAdic(sequence, this.order, this.base);
     }
 
     /**
@@ -455,7 +466,7 @@ public final class PAdic {
             final int digit = findMultiplier(divided.digits[i], actualDivisor.digits[0]);
 
             if (digit == -1) {
-                throw new RuntimeException("Bullshit, that shouldn't happened.");
+                throw new RuntimeException("CALCULATION FAILED. Couldn't find multiplier x satisfying " + divided.digits[i] + " = x" + actualDivisor.digits[0] + " (mod " + this.base + ").");
             }
 
             final int[] tmp = multiplyToInteger(actualDivisor.digits, digit);
@@ -557,7 +568,7 @@ public final class PAdic {
     }
     
     private static void checkForPrime(final int base) {
-        final boolean isPrimeBase = (base < precalculatedPrimes && isPrime[base]);
+        final boolean isPrimeBase = (base > 1) && (base < precalculatedPrimes ? isPrime[base] : new BigInteger("" + base).isProbablePrime(10));
         
         if (!isPrimeBase) {
             throw new RuntimeException("Base " + base + " is not prime. Base must be a prime number.");
@@ -570,10 +581,6 @@ public final class PAdic {
         if (!areEqual) {
             throw new RuntimeException("Mathematical operations can be done only with p-adic numbers that have the same base.");
         }
-    }
-    
-    private int gcd(final int a, final int b) {
-        return b == 0 ? a : gcd(b, a % b);
     }
 
     @Override
