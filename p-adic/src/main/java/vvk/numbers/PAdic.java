@@ -30,6 +30,7 @@ import java.util.Arrays;
 public final class PAdic {
 
     private static final int len;
+    private static final int limit;
     private static final boolean[] isPrime;
     private static int precalculatedPrimes;
     private final int base;
@@ -44,7 +45,8 @@ public final class PAdic {
     }
 
     static {
-        len = (1 << 6);
+        len = (1 << 7);
+        limit = (len / 3) << 1;
         precalculatedPrimes = (1 << 16);
         isPrime = new boolean[precalculatedPrimes];
         doEratostheneSieve();
@@ -453,22 +455,36 @@ public final class PAdic {
         PAdic.checkForBaseEquality(this, divisor);
         
         final int[] result = new int[PAdic.len];
-
-        PAdic divided = new PAdic(this.digits, 0, this.base, false);
+        final int[] dividedDigits = new int[PAdic.len];
+        final int[] divisorDigits= new int[PAdic.len];
 
         int pos = 0;
 
-        while (pos < PAdic.len && divisor.digits[pos] == 0) {
+        while (pos < PAdic.len && this.digits[pos] == 0 && divisor.digits[pos] == 0) {
             ++pos;
         }
 
-        final int[] temp = new int[PAdic.len];
-
         for (int i = 0; i + pos < PAdic.len; ++i) {
-            temp[i] = divisor.digits[i + pos];
+            dividedDigits[i] = this.digits[i + pos];
+            divisorDigits[i] = divisor.digits[i + pos];
         }
 
-        final PAdic actualDivisor = new PAdic(temp, divisor.getOrder() - pos, this.base);
+        int dividedOrder = this.getOrder() - pos;
+        int divisorOrder = divisor.getOrder() - pos;
+
+        pos = 0;
+        while (pos < PAdic.len && divisorDigits[pos] == 0) {
+            ++pos;
+        }
+
+        for (int i = 0; i + pos < PAdic.len; ++i) {
+            divisorDigits[i] = divisorDigits[i + pos];
+        }
+        dividedOrder -= pos;
+        divisorOrder -= pos;
+
+        PAdic divided = new PAdic(dividedDigits, 0, this.base, false);
+        final PAdic actualDivisor = new PAdic(divisorDigits, 0, this.base);
 
         for (int i = 0; i < PAdic.len; ++i) {
             final int digit = findMultiplier(divided.digits[i], actualDivisor.digits[0]);
@@ -483,7 +499,7 @@ public final class PAdic {
             divided = divided.subtract(new PAdic(tmp, 0, this.base, false), i);
         }
 
-        final int order = PAdic.calculateOrder(result, this.getOrder() - pos, actualDivisor.getOrder(), Operation.DIVISION);
+        final int order = PAdic.calculateOrder(result, dividedOrder, divisorOrder, Operation.DIVISION);
 
         return new PAdic(result, order, this.base, false);
     }
@@ -575,7 +591,7 @@ public final class PAdic {
         }
     }
     
-    private static void checkForPrime(final int base) {
+    static void checkForPrime(final int base) {
         if (!(base < precalculatedPrimes)) {
             throw new RuntimeException("Sorry, " + base + " is too large number to be a base and I cannot be sure that it's prime. Enter a prime number that is less than " + precalculatedPrimes + ".");
         }
@@ -604,7 +620,7 @@ public final class PAdic {
     public String toString() {
         StringBuilder result = new StringBuilder(PAdic.len);
 
-        int pos = PAdic.len - 1;
+        int pos = PAdic.limit - 1;
 
         while (pos >= 0 && digits[pos] == 0) {
             --pos;
@@ -656,7 +672,7 @@ public final class PAdic {
             return false;
         }
 
-        for (int i = 0; i < PAdic.len; ++i) {
+        for (int i = 0; i < PAdic.limit; ++i) {
             if (this.digits[i] != number.digits[i]) {
                 return false;
             }
@@ -670,7 +686,7 @@ public final class PAdic {
         int hash = 0;
         final int prime = 31;
 
-        for (int i = 0; i < PAdic.len; ++i) {
+        for (int i = 0; i < PAdic.limit; ++i) {
             hash = hash * prime + digits[i];
         }
 
