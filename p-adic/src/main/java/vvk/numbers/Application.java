@@ -68,8 +68,11 @@ public class Application {
 
     public void read() throws IOException {
         System.out.print("Base = ");
-        this.base = Integer.valueOf(READER.readLine().trim());
-        new PAdic(BigInteger.ONE, this.base);
+        String _base = READER.readLine().trim();
+        if (new BigInteger(_base).compareTo(new BigInteger("" + (1 << 16))) > -1) {
+            throw new RuntimeException("Mmm, " + _base + " is too large number to be a base and I cannot be sure that it's prime. Enter a prime number that is less than " + (1 << 16) + ".");
+        }
+        this.base = Integer.valueOf(_base);
 
         boolean readSuccessfully = false;
         while (!readSuccessfully) {

@@ -91,7 +91,10 @@ public final class PAdic {
     }
 
     /**
-     * Constructs p-adic number from its string representation.
+     * Constructs p-adic number from its string representation in canonical form.
+     * Indexes increase from right to left.
+     * For example, 1234 means 1 * (p^3) + 2 * (p^2) + 3 * (p^1) + 4 * (p^0).
+     * This method is acceptable only in case when base is less or equal to 7.
      * @param number string that represents p-adic number.
      *              It can be either integer value or floating point value.
      *              Notice that point can be defined by '.' symbol only.
@@ -99,6 +102,10 @@ public final class PAdic {
      *             Notice that base must be a prime number.
      */
     public PAdic(final String number, final int base) {
+        if (base > 7) {
+            throw new RuntimeException("Sorry, it is impossible to determine what number it is in canonical form if base is larger than 7. \n Use rational fraction or sequence representation.");
+        }
+
         PAdic.checkForPrime(base);
             
         this.digits = new int[PAdic.len];
@@ -196,6 +203,7 @@ public final class PAdic {
      * In case of inconsistency between sequence and order it will be resolved in way that order wins.
      * For example, if you will try to build number from sequence <code>{0, 0, 0, 0, 0, 1, 2, 3}</code>
      * with order 2 then result will be 32100 and first three zeros won't be taken into account.
+     * In the same way you can construct number 32100: its sequence representation must be 1, 2, 3 and order is equal to 2.
      * @param sequence sequence of p-adic digits that p-adic number must be built from.
      *               All the digits must be nonnegative and less than base of the p-adic number.
      * @param order order of the p-adic number.
@@ -568,7 +576,11 @@ public final class PAdic {
     }
     
     private static void checkForPrime(final int base) {
-        final boolean isPrimeBase = (base > 1) && (base < precalculatedPrimes ? isPrime[base] : new BigInteger("" + base).isProbablePrime(10));
+        if (!(base < precalculatedPrimes)) {
+            throw new RuntimeException("Sorry, " + base + " is too large number to be a base and I cannot be sure that it's prime. Enter a prime number that is less than " + precalculatedPrimes + ".");
+        }
+
+        final boolean isPrimeBase = base > 1 && isPrime[base];
         
         if (!isPrimeBase) {
             throw new RuntimeException("Base " + base + " is not prime. Base must be a prime number.");
