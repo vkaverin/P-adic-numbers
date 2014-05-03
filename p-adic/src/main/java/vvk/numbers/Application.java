@@ -72,7 +72,11 @@ public class Application {
         if (new BigInteger(_base).compareTo(new BigInteger("" + (1 << 16))) > -1) {
             throw new RuntimeException("Mmm, " + _base + " is too large number to be a base and I cannot be sure that it's prime. Enter a prime number that is less than " + (1 << 16) + ".");
         }
+
         this.base = Integer.valueOf(_base);
+
+        // let's check that _base is prime
+        PAdic.checkForPrime(this.base);
 
         boolean readSuccessfully = false;
         while (!readSuccessfully) {
