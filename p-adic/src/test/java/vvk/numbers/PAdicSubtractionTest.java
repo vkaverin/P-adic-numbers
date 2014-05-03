@@ -66,7 +66,7 @@ public class PAdicSubtractionTest {
 
         PAdic x = new PAdic("1231.0012", 5);
         PAdic y = new PAdic("13211", 5);
-        result = new PAdic("444444444444444444444444444444444444444444444444444444433020.0012", base);
+        result = new PAdic("44444444444444444444444444444444444444444444444444444444444444444444444444433020.0012", base);
 
         Assert.assertEquals(result, x.subtract(y));
 
@@ -75,7 +75,7 @@ public class PAdicSubtractionTest {
         Assert.assertEquals(result, y.subtract(x));
 
         y = new PAdic("1.23", base);
-        result = new PAdic("444444444444444444444444444444444444444444444444444444443220.2233", base);
+        result = new PAdic("44444444444444444444444444444444444444444444444444444444444444444444444444443220.2233", base);
 
         Assert.assertEquals(result, y.subtract(x));
 
