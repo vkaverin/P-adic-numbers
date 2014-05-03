@@ -82,6 +82,9 @@ public class PAdicDivisionTest {
         Assert.assertEquals(c, d.divide(c));
         Assert.assertEquals(b, d.divide(b));
 
-
+        PAdic x = new PAdic(new BigInteger("23"), new BigInteger("14"), 7);
+        PAdic y = new PAdic(new BigInteger("23"), 7);
+        result = new PAdic(new BigInteger("1"), new BigInteger("14"), 7);
+        Assert.assertEquals(result, x.divide(y));
     }
 }
