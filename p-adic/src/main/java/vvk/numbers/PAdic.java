@@ -412,7 +412,7 @@ public final class PAdic {
     public PAdic multiply(final PAdic multiplier) {
         PAdic.checkForBaseEquality(this, multiplier);
 
-        PAdic result = new PAdic("0", this.base);
+        PAdic result = new PAdic(new int[] {0}, 0, this.base);
 
         for (int i = 0; i < PAdic.len; ++i) {
             final int temp[] = multiplyToInteger(digits, multiplier.digits[i]);
@@ -630,19 +630,34 @@ public final class PAdic {
             ++pos;
         }
 
-        for (int i = pos; i >= 0; --i) {
+        for (int i = pos; i >= Math.abs(order); --i) {
             result.append(digits[i]);
         }
 
         if (order < 0) {
-            while (result.length() < -order) {
-                result.insert(0, '0');
-            }
-            result.insert(result.length() + order, '.');
+            result.append('.');
+        }
+
+        for (int i = Math.abs(order) - 1; i >= 0; --i) {
+            result.append(digits[i]);
         }
 
         if (result.charAt(0) == '.') {
             result.insert(0, '0');
+        }
+
+        if (!result.toString().startsWith("0.")) {
+            pos = 0;
+
+            while (pos < result.length() && result.charAt(pos) == '0') {
+                ++pos;
+            }
+
+            if (pos == result.length()) {
+                --pos;
+            }
+
+            result.delete(0, pos);
         }
 
         return result.toString();
