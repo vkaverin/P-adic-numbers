@@ -69,6 +69,11 @@ public class Application {
     public void read() throws IOException {
         System.out.print("Base = ");
         String _base = READER.readLine().trim();
+
+        if (_base.matches("^.*[.,].*$")) {
+            throw new RuntimeException("Base must be integer.");
+        }
+
         if (new BigInteger(_base).compareTo(new BigInteger("" + (1 << 16))) > -1) {
             throw new RuntimeException("Mmm, " + _base + " is too large number to be a base and I cannot be sure that it's prime. Enter a prime number that is less than " + (1 << 16) + ".");
         }
@@ -111,7 +116,7 @@ public class Application {
         subtraction = a.subtract(b);
         multiplication = a.multiply(b);
 
-        if (new PAdic("0", this.base).equals(b)) {
+        if (new PAdic(new int[] {0}, 0, this.base).equals(b)) {
             division = null;
         } else {
             division = a.divide(b);
