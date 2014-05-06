@@ -483,6 +483,17 @@ public final class PAdic {
         dividedOrder -= pos;
         divisorOrder -= pos;
 
+        if (divisorOrder < 0 && divisorOrder < dividedOrder) {
+            final int diff = Math.min(dividedOrder, 0) - divisorOrder;
+            for (int i = PAdic.len - 1; i - diff >= 0; --i) {
+                final int idx = i - diff;
+                dividedDigits[i] = dividedDigits[idx];
+                dividedDigits[idx] = 0;
+            }
+            dividedOrder += diff;
+            divisorOrder = 0;
+        }
+
         PAdic divided = new PAdic(dividedDigits, 0, this.base, false);
         final PAdic actualDivisor = new PAdic(divisorDigits, 0, this.base);
 
@@ -619,7 +630,7 @@ public final class PAdic {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder(PAdic.len);
-
+        final boolean oneDigitBase = base <= 7;
         int pos = PAdic.limit - 1;
 
         while (pos >= 0 && digits[pos] == 0) {
@@ -630,20 +641,25 @@ public final class PAdic {
             ++pos;
         }
 
+        String suffix = !oneDigitBase ? "_" : "";
+
         for (int i = pos; i >= Math.abs(order); --i) {
-            result.append(digits[i]);
+            result.append(digits[i] + suffix);
         }
 
         if (order < 0) {
+            if (!oneDigitBase && result.length() > 0) {
+                result.delete(result.length() - 1, result.length());
+            }
             result.append('.');
         }
 
         for (int i = Math.abs(order) - 1; i >= 0; --i) {
-            result.append(digits[i]);
+            result.append(digits[i] + suffix);
         }
 
         if (result.charAt(0) == '.') {
-            result.insert(0, '0');
+            result.insert(0, "0");
         }
 
         if (!result.toString().startsWith("0.")) {
@@ -658,6 +674,10 @@ public final class PAdic {
             }
 
             result.delete(0, pos);
+        }
+
+        if (!oneDigitBase) {
+            result.delete(result.length() - 1, result.length());
         }
 
         return result.toString();
