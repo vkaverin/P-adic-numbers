@@ -92,6 +92,41 @@ public class PAdicDivisionTest {
         result = new PAdic(new BigInteger("-5"), 5);
 
         Assert.assertEquals(result, x.divide(y));
+
+        x = new PAdic("1", 5);
+        y = new PAdic("0.1", 5);
+        result = new PAdic("10", 5);
+        Assert.assertEquals(result, x.divide(y));
+
+        x = new PAdic("110", 5);
+        y = new PAdic("1.1", 5);
+        result = new PAdic("100", 5);
+        Assert.assertEquals(result, x.divide(y));
+
+        x = new PAdic("0.111", 5);
+        y = new PAdic("11.1", 5);
+        result = new PAdic("0.01", 5);
+        Assert.assertEquals(result, x.divide(y));
+
+        x = new PAdic("111", 5);
+        y = new PAdic("0.111", 5);
+        result = new PAdic("1000", 5);
+        Assert.assertEquals(result, x.divide(y));
+
+        x = new PAdic("111", 5);
+        y = new PAdic("11.1", 5);
+        result = new PAdic("10", 5);
+        Assert.assertEquals(result, x.divide(y));
+
+        x = new PAdic("111.111", 5);
+        y = new PAdic("0.111111", 5);
+        result = new PAdic("1000", 5);
+        Assert.assertEquals(result, x.divide(y));
+
+        x = new PAdic("111.11", 5);
+        y = new PAdic("0.11111", 5);
+        result = new PAdic("1000", 5);
+        Assert.assertEquals(result, x.divide(y));
     }
 
     @Test
